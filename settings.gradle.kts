@@ -1,3 +1,6 @@
+// Enables type-safe accessors: projects.core.model instead of project(":core:model")
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 pluginManagement {
     repositories {
         google {

@@ -13,10 +13,33 @@ Build this app step-by-step using the reference:
 
 | Step | Task | Status |
 |------|------|--------|
-| 1.1 | ~~Fix compileSdk~~ Not needed: with **AGP 9**, `compileSdk { version = release(36) }` is valid (new block API). Use as-is. | ✅ N/A |
-| 1.2 | Expand `gradle/libs.versions.toml`: add `[versions]` for ksp, hilt, androidxRoom, retrofit, okhttp, kotlinxSerialization, coroutines, androidxNavigation; add `[libraries]` using `version.ref`; add `[plugins]` for ksp, hilt, kotlinx-serialization. Use reference `libs.versions.toml` as guide. | ⬜ |
-| 1.3 | (Optional) Set Java 17 in `app/build.gradle.kts`: `compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }`. | ⬜ |
-| 1.4 | In `settings.gradle.kts`, add at top: `enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")`. | ⬜ |
+| 1.1  | Expand `gradle/libs.versions.toml`: add `[versions]` for ksp, hilt, androidxRoom, retrofit, okhttp, kotlinxSerialization, coroutines, androidxNavigation; add `[libraries]` using `version.ref`; add `[plugins]` for ksp, hilt, kotlinx-serialization. Use reference `libs.versions.toml` as guide. | ✅ |
+| 1.2  | (Optional) Set Java 17 in `app/build.gradle.kts`. | ✅ |
+| 1.3  | In `settings.gradle.kts`, add at top: `enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")`. | ✅ |
+
+### Plugins in the catalog (reference vs you)
+
+In the reference there are many entries under `[plugins]`. You don’t need all of them at once:
+
+| Plugin | Reference has it? | You need it when |
+|--------|--------------------|------------------|
+| `android-application` | ✅ | Already have (app module). |
+| `kotlin-compose` | as `compose-compiler` | Already have (Compose in app). |
+| `android-library` | ✅ | **Phase 2:** when you add `core:model`, `core:network`, etc. Add to catalog and use in each library module. |
+| `kotlin-android` | ✅ | **Phase 2:** use with `android-library` in every Android library module (e.g. `core:model`). Add to catalog. |
+| `kotlin-jvm` | ✅ | Only if you add a **JVM-only** module (no Android), e.g. like reference’s `core:common`. Skip until then. |
+| `kotlinx-serialization` | ✅ | You have it; use in `core:model` when you add `@Serializable` models. |
+| `ksp` | ✅ | You have it; needed for Room, Hilt, etc. |
+| `hilt-plugin` | ✅ | You have it. |
+| `kotlin-parcelize` | ✅ | Optional; add when you need `Parcelable` (e.g. passing objects in intents). |
+| `android-test`, `spotless`, `baselineprofile`, `protobuf-plugin` | ✅ | Add in later phases (baseline profile, Spotless, DataStore/Protobuf). |
+
+**For Phase 2:** add to `[plugins]` in `libs.versions.toml`:
+
+- `android-library = { id = "com.android.library", version.ref = "agp" }`
+- `kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }`
+
+(And in root `build.gradle.kts` add `alias(libs.plugins.android.library) apply false` and `alias(libs.plugins.kotlin.android) apply false` so modules can apply them.)
 
 ---
 
@@ -76,4 +99,4 @@ Build this app step-by-step using the reference:
 
 ---
 
-*Last updated: roadmap created; Phases 1–2 defined.*
+*Last updated: Phase 1 verified; plugin table and Phase 2 plugin steps added.*
