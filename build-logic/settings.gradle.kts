@@ -8,20 +8,20 @@
 
 // Where the build-logic build can download dependencies (AGP, Kotlin plugin, etc.).
 // Without this, the convention subproject could not resolve compileOnly(...) deps.
+// versionCatalogs must be INSIDE this block in included builds (Settings doesn't
+// expose top-level versionCatalogs here), so we reuse the root's libs from one place.
 dependencyResolutionManagement {
     repositories {
         google()   // Android Gradle Plugin, AndroidX
         mavenCentral()  // Kotlin Gradle Plugin
     }
-}
-
-// Reuse the ROOT project's version catalog so we can say libs.android.gradlePlugin
-// instead of hardcoding coordinates. "../gradle/libs.versions.toml" is relative
-// to the build-logic/ folder, so it points to the root's gradle/libs.versions.toml.
-// One catalog = one place to bump AGP/Kotlin versions for the whole project.
-versionCatalogs {
-    create("libs") {
-        from(files("../gradle/libs.versions.toml"))
+    // Reuse the ROOT project's version catalog so convention/build.gradle.kts can
+    // use libs.android.gradlePlugin and libs.kotlin.gradlePlugin. Path is relative
+    // to build-logic/ → "../gradle/libs.versions.toml" = root's version catalog.
+    versionCatalogs {
+        create("libs") {
+            from(files("../gradle/libs.versions.toml"))
+        }
     }
 }
 
