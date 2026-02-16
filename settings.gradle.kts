@@ -2,6 +2,7 @@
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
+    includeBuild("build-logic")
     repositories {
         google {
             content {
@@ -24,4 +25,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "Pokedex-MAD"
 include(":app")
+include(":core:model")
  
