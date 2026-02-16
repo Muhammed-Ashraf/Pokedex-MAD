@@ -6,9 +6,8 @@
 // JARs that the root project can apply via id("ashraf.pokedex.mad.android.library").
 // =============================================================================
 
-// Enables writing build logic in Kotlin. Gradle will compile .kt files in
-// src/main/kotlin/ and expose them as plugins when we register them in
-// the gradlePlugin { } block (added in step 2.4).
+// Enables writing build logic in Kotlin. Gradle compiles .kt files in
+// src/main/kotlin/ and exposes them as plugins via the gradlePlugin { } block below.
 plugins {
     `kotlin-dsl`
 }
@@ -33,6 +32,22 @@ java {
 //   CommonExtension, and other AGP APIs in our Kotlin plugin class.
 // - kotlin.gradlePlugin: so we can use KotlinAndroidProjectExtension, JvmTarget,
 //   etc. in KotlinAndroid.kt.
+// -----------------------------------------------------------------------------
+// Step 2.4: Register the convention plugin so the root project can apply it.
+// When a module uses id("ashraf.pokedex.mad.android.library"), Gradle loads
+// this included build, finds the plugin by id, and runs AndroidLibraryConventionPlugin.apply(project).
+// "androidLibrary" is the registration name (used only inside this file);
+// the important part is "id" (what modules write) and "implementationClass" (the class to run).
+// -----------------------------------------------------------------------------
+gradlePlugin {
+    plugins {
+        register("androidLibrary") {
+            id = "ashraf.pokedex.mad.android.library"
+            implementationClass = "ashraf.pokedex.mad.AndroidLibraryConventionPlugin"
+        }
+    }
+}
+
 dependencies {
     compileOnly(libs.android.gradlePlugin)
     compileOnly(libs.kotlin.gradlePlugin)
