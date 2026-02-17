@@ -5,9 +5,7 @@ plugins {
 
 android {
     namespace = "ashraf.pokedex.pokedex.mad"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "ashraf.pokedex.pokedex.mad"
