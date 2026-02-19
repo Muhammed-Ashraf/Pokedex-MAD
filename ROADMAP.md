@@ -178,6 +178,30 @@ So the root finds plugins from the root’s `pluginManagement` repos **and** fro
 
 ---
 
+### Phase 2.6 — Hilt and Spotless convention plugins (align with reference)
+
+**Concept:** The reference project (pokedex-compose) does not apply Hilt/KSP or Spotless directly in each module. Instead it uses two extra convention plugins: one that applies Hilt + KSP + Hilt dependencies in a single `id("...")`, and one that applies Spotless with shared formatting rules. We mirror that so every module stays minimal and consistent.
+
+**Why these are needed:**
+
+| Convention plugin | What it does | Why use it instead of applying in each module |
+|-------------------|--------------|-----------------------------------------------|
+| **android.hilt** (`ashraf.pokedex.mad.android.hilt`) | Applies the Hilt Gradle plugin, the KSP plugin, and adds `implementation(hilt-android)`, `implementation(androidx.hilt.navigation.compose)`, and `ksp(hilt-compiler)`. | Every module that needs DI (app, core:network, later core:database, feature modules) would otherwise repeat the same three plugin lines and three dependency lines. One id gives you all of it; version and libs stay in one place (the plugin and catalog). |
+| **spotless** (`ashraf.pokedex.mad.spotless`) | Applies the Spotless Gradle plugin and configures it: Kotlin/kts/xml targets, ktlint rules, license headers from root `spotless/spotless.license.kt` and `spotless.license.xml`, trim trailing whitespace, end with newline. | Ensures the same code style and license header in every module without copying the same long `spotless { }` block into each `build.gradle.kts`. Run `./gradlew spotlessApply` once to fix existing files; `spotlessCheck` can run in CI. |
+
+**What was done (for reference):**
+
+1. **Version catalog** (`gradle/libs.versions.toml`): Added `spotless`, `androidxHiltNavigationCompose`; libraries `androidx-hilt-navigation-compose`, `spotless-gradlePlugin`; plugin `spotless`.
+2. **Build-logic:** Added `AndroidHiltConventionPlugin.kt` (applies Hilt + KSP, adds the three deps from catalog) and `SpotlessConventionPlugin.kt` (applies Spotless, configures ktlint + license headers for kotlin/kts/xml). Registered both in `build-logic/convention/build.gradle.kts`. Added `compileOnly(libs.spotless.gradlePlugin)` so the Spotless plugin compiles.
+3. **Root:** Added `spotless/spotless.license.kt` and `spotless/spotless.license.xml` (license headers; Spotless injects them into sources).
+4. **App:** Replaced direct Hilt/KSP and Hilt deps with `id("ashraf.pokedex.mad.android.hilt")` and `id("ashraf.pokedex.mad.spotless")`.
+5. **core:model:** Added `id("ashraf.pokedex.mad.spotless")` only (no Hilt in this module).
+6. **core:network:** Replaced direct Hilt/KSP and Hilt deps with `id("ashraf.pokedex.mad.android.hilt")` and `id("ashraf.pokedex.mad.spotless")`.
+
+After this, module `plugins { }` blocks match the reference style: one line per concern (library, hilt, spotless, serialization) instead of repeating the same Gradle and dependency boilerplate everywhere.
+
+---
+
 ## Phase 3: First core module — `core:model`
 
 **Concept:** `core:model` holds shared data classes (e.g. `Pokemon`). No Android UI, Room, or Retrofit—only Kotlin and kotlinx.serialization. Because you have the convention plugin (Phase 2), this module’s `build.gradle.kts` is minimal: apply the plugin + serialization, set `namespace`, add dependencies. No compileSdk/minSdk in this file.
@@ -230,7 +254,7 @@ So the root finds plugins from the root’s `pluginManagement` repos **and** fro
 **Phase 4.0 — Hilt in the app**
 
 1. **Root `build.gradle.kts`:** In `plugins { }` add `alias(libs.plugins.hilt.plugin) apply false` and `alias(libs.plugins.ksp) apply false`.
-2. **`app/build.gradle.kts`:** In `plugins { }` add `alias(libs.plugins.hilt.plugin)` and `alias(libs.plugins.ksp)` (KSP is required for `ksp(libs.hilt.compiler)` to work). In `dependencies { }` add `implementation(libs.hilt.android)` and `ksp(libs.hilt.compiler)`.
+2. **`app/build.gradle.kts`:** Either (a) use the **Hilt convention plugin** (Phase 2.6): add `id("ashraf.pokedex.mad.android.hilt")` in `plugins { }` and do *not* add Hilt/KSP or Hilt deps in dependencies — the plugin adds them; or (b) without convention plugin: add `alias(libs.plugins.hilt.plugin)` and `alias(libs.plugins.ksp)` in `plugins { }`, and `implementation(libs.hilt.android)` and `ksp(libs.hilt.compiler)` in `dependencies { }`.
 3. **Application class:** Create a class (e.g. `PokedexApplication`) in the app module, in the same package as your app. Annotate it with `@HiltAndroidApp` (from `dagger.hilt.android.HiltAndroidApp`). Extend `Application`. In `AndroidManifest.xml`, add `android:name=".PokedexApplication"` (or your class name) on the `<application>` tag.
 4. **Sync** — the app should compile. Hilt will generate DI code; you don’t need to inject anything in the UI yet.
 
@@ -243,7 +267,7 @@ So the root finds plugins from the root’s `pluginManagement` repos **and** fro
 
 2. **`core/network/build.gradle.kts` (4.1.2)**  
    - Plugins: `id("ashraf.pokedex.mad.android.library")`, `alias(libs.plugins.kotlinx.serialization)`.  
-   - Optional: Hilt so you can provide Retrofit from a module — add `id("com.google.dagger.hilt.android")` and `ksp(libs.hilt.compiler)` if you want NetworkModule in this module.  
+   - Optional: Hilt so you can provide Retrofit from a module — add `id("ashraf.pokedex.mad.android.hilt")` (and `id("ashraf.pokedex.mad.spotless")` if you use Spotless; see Phase 2.6). The Hilt convention plugin applies Hilt + KSP and adds the Hilt deps.  
    - `android { namespace = "ashraf.pokedex.mad.core.network" }`. If you use `BuildConfig.DEBUG` in NetworkModule, add `buildFeatures { buildConfig = true }`.  
    - Dependencies: `implementation(projects.core.model)`, `implementation(platform(libs.retrofit.bom))`, `implementation(libs.retrofit)`, `implementation(libs.retrofit.kotlinx.serialization)`, `implementation(platform(libs.okhttp.bom))`, `implementation(libs.okhttp.logging.interceptor)`, `implementation(libs.kotlinx.serialization.json)`, `implementation(libs.kotlinx.coroutines.android)`.
 
@@ -294,7 +318,7 @@ So the root finds plugins from the root’s `pluginManagement` repos **and** fro
 
 ## Phase 7: Code quality (Spotless)
 
-*Steps will be added here when we start this phase.*
+Spotless is already applied via the **Spotless convention plugin** (Phase 2.6): each module that applies `id("ashraf.pokedex.mad.spotless")` gets the same formatting and license-header rules. Root license files are in `spotless/spotless.license.kt` and `spotless/spotless.license.xml`. Run `./gradlew spotlessApply` to fix existing files; use `spotlessCheck` in CI. No extra Spotless steps are required unless you want to add more rules or formats.
 
 ---
 
@@ -310,4 +334,4 @@ So the root finds plugins from the root’s `pluginManagement` repos **and** fro
 
 ---
 
-*Last updated: Phase 4.0 clarified — KSP plugin must be applied in root (apply false) and in app so `ksp(libs.hilt.compiler)` resolves.*
+*Last updated: Phase 2.6 added — Hilt and Spotless convention plugins documented with explanation; Phase 4.0/4.1 walkthrough and Phase 7 updated to reference them.*

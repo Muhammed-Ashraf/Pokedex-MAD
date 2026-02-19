@@ -2,8 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.hilt.plugin)
-    alias(libs.plugins.ksp)
+    id("ashraf.pokedex.mad.android.hilt")
+    id("ashraf.pokedex.mad.spotless")
 }
 
 android {
@@ -61,8 +61,4 @@ dependencies {
 
     // cores
     implementation(projects.core.model)
-
-    // Hilt
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
 }
