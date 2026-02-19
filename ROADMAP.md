@@ -178,6 +178,30 @@ So the root finds plugins from the root’s `pluginManagement` repos **and** fro
 
 ---
 
+### Phase 2.6 — Hilt and Spotless convention plugins (align with reference)
+
+**Concept:** The reference project (pokedex-compose) does not apply Hilt/KSP or Spotless directly in each module. Instead it uses two extra convention plugins: one that applies Hilt + KSP + Hilt dependencies in a single `id("...")`, and one that applies Spotless with shared formatting rules. We mirror that so every module stays minimal and consistent.
+
+**Why these are needed:**
+
+| Convention plugin | What it does | Why use it instead of applying in each module |
+|-------------------|--------------|-----------------------------------------------|
+| **android.hilt** (`ashraf.pokedex.mad.android.hilt`) | Applies the Hilt Gradle plugin, the KSP plugin, and adds `implementation(hilt-android)`, `implementation(androidx.hilt.navigation.compose)`, and `ksp(hilt-compiler)`. | Every module that needs DI (app, core:network, later core:database, feature modules) would otherwise repeat the same three plugin lines and three dependency lines. One id gives you all of it; version and libs stay in one place (the plugin and catalog). |
+| **spotless** (`ashraf.pokedex.mad.spotless`) | Applies the Spotless Gradle plugin and configures it: Kotlin/kts/xml targets, ktlint rules, license headers from root `spotless/spotless.license.kt` and `spotless.license.xml`, trim trailing whitespace, end with newline. | Ensures the same code style and license header in every module without copying the same long `spotless { }` block into each `build.gradle.kts`. Run `./gradlew spotlessApply` once to fix existing files; `spotlessCheck` can run in CI. |
+
+**What was done (for reference):**
+
+1. **Version catalog** (`gradle/libs.versions.toml`): Added `spotless`, `androidxHiltNavigationCompose`; libraries `androidx-hilt-navigation-compose`, `spotless-gradlePlugin`; plugin `spotless`.
+2. **Build-logic:** Added `AndroidHiltConventionPlugin.kt` (applies Hilt + KSP, adds the three deps from catalog) and `SpotlessConventionPlugin.kt` (applies Spotless, configures ktlint + license headers for kotlin/kts/xml). Registered both in `build-logic/convention/build.gradle.kts`. Added `compileOnly(libs.spotless.gradlePlugin)` so the Spotless plugin compiles.
+3. **Root:** Added `spotless/spotless.license.kt` and `spotless/spotless.license.xml` (license headers; Spotless injects them into sources).
+4. **App:** Replaced direct Hilt/KSP and Hilt deps with `id("ashraf.pokedex.mad.android.hilt")` and `id("ashraf.pokedex.mad.spotless")`.
+5. **core:model:** Added `id("ashraf.pokedex.mad.spotless")` only (no Hilt in this module).
+6. **core:network:** Replaced direct Hilt/KSP and Hilt deps with `id("ashraf.pokedex.mad.android.hilt")` and `id("ashraf.pokedex.mad.spotless")`.
+
+After this, module `plugins { }` blocks match the reference style: one line per concern (library, hilt, spotless, serialization) instead of repeating the same Gradle and dependency boilerplate everywhere.
+
+---
+
 ## Phase 3: First core module — `core:model`
 
 **Concept:** `core:model` holds shared data classes (e.g. `Pokemon`). No Android UI, Room, or Retrofit—only Kotlin and kotlinx.serialization. Because you have the convention plugin (Phase 2), this module’s `build.gradle.kts` is minimal: apply the plugin + serialization, set `namespace`, add dependencies. No compileSdk/minSdk in this file.
@@ -194,7 +218,89 @@ So the root finds plugins from the root’s `pluginManagement` repos **and** fro
 
 ## Phase 4: More core modules (network, database, data)
 
-*Steps will be added here when we start this phase.*
+**Concept:** Add the data layer: **core:network** (Retrofit + PokeAPI), **core:database** (Room cache), **core:data** (repositories that use both). ViewModels and UI will depend only on **core:data**; they never touch Retrofit or Room directly.
+
+**Order:** Do 4.1 (network) first, then 4.2 (database), then 4.3 (data). You need Hilt in the app before core:network provides a Retrofit service via DI.
+
+---
+
+### Phase 4.0 — Hilt in the app (prerequisite for 4.1)
+
+| Step  | Task                                                                                                                                                                                                                        | Status |
+|-------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------|
+| 4.0.1 | In root `build.gradle.kts`, add `alias(libs.plugins.hilt.plugin) apply false` and `alias(libs.plugins.ksp) apply false`. In `app/build.gradle.kts`, in `plugins { }` add `alias(libs.plugins.hilt.plugin)` and `alias(libs.plugins.ksp)`; in `dependencies { }` add `implementation(libs.hilt.android)` and `ksp(libs.hilt.compiler)`. (KSP plugin is required for `ksp(...)` to resolve.) | ✅      |
+| 4.0.2 | Create an `Application` class annotated with `@HiltAndroidApp`. Register it in AndroidManifest with `android:name`.                                                                                                         | ✅      |
+| 4.0.3 | Sync; app should build. No modules need to inject anything yet.                                                                                                                                                             | ✅      |
+
+---
+
+### Phase 4.1 — core:network
+
+| Step | Task | Status |
+|------|------|--------|
+| 4.1.1 | Create `core/network/` with `build.gradle.kts`, `src/main/AndroidManifest.xml`, `src/main/kotlin/` + package path (e.g. `ashraf/pokedex/mad/core/network/`). Add `include(":core:network")` in `settings.gradle.kts`. | ⬜ |
+| 4.1.2 | In `core/network/build.gradle.kts`: apply convention plugin, kotlinx.serialization; set namespace. Deps: `implementation(projects.core.model)`, Retrofit (BOM + retrofit + converter-kotlinx-serialization), OkHttp (BOM + logging-interceptor), kotlinx.serialization.json, coroutines-android. Optional: Hilt (so NetworkModule can provide Retrofit). | ⬜ |
+| 4.1.3 | Add **PokemonResponse.kt** in `core/network` (e.g. in `model/` subpackage): `@Serializable` data class with `count`, `next`, `previous`, `results: List<Pokemon>`. Uses `Pokemon` from core:model. | ⬜ |
+| 4.1.4 | Add **PokedexService.kt**: Retrofit interface with `@GET("pokemon") suspend fun fetchPokemonList(@Query("limit") limit, @Query("offset") offset): PokemonResponse`. Base URL will be `https://pokeapi.co/api/v2/`. | ⬜ |
+| 4.1.5 | Add **NetworkModule.kt** (Hilt): provide `Json`, `OkHttpClient`, `Retrofit`, `PokedexService`. Base URL `https://pokeapi.co/api/v2/`, kotlinx.serialization converter. Enable `buildConfig = true` in core:network if you use BuildConfig.DEBUG for logging. | ⬜ |
+| 4.1.6 | In `app/build.gradle.kts` add `implementation(projects.core.network)`. Sync; app should build (no need to use the service in UI yet). | ⬜ |
+
+**Reference:** `core/network/` in pokedex-compose (build.gradle.kts, PokedexService, PokemonResponse, NetworkModule).
+
+---
+
+### Phase 4 — Step-by-step walkthrough (4.0 + 4.1)
+
+**Phase 4.0 — Hilt in the app**
+
+1. **Root `build.gradle.kts`:** In `plugins { }` add `alias(libs.plugins.hilt.plugin) apply false` and `alias(libs.plugins.ksp) apply false`.
+2. **`app/build.gradle.kts`:** Either (a) use the **Hilt convention plugin** (Phase 2.6): add `id("ashraf.pokedex.mad.android.hilt")` in `plugins { }` and do *not* add Hilt/KSP or Hilt deps in dependencies — the plugin adds them; or (b) without convention plugin: add `alias(libs.plugins.hilt.plugin)` and `alias(libs.plugins.ksp)` in `plugins { }`, and `implementation(libs.hilt.android)` and `ksp(libs.hilt.compiler)` in `dependencies { }`.
+3. **Application class:** Create a class (e.g. `PokedexApplication`) in the app module, in the same package as your app. Annotate it with `@HiltAndroidApp` (from `dagger.hilt.android.HiltAndroidApp`). Extend `Application`. In `AndroidManifest.xml`, add `android:name=".PokedexApplication"` (or your class name) on the `<application>` tag.
+4. **Sync** — the app should compile. Hilt will generate DI code; you don’t need to inject anything in the UI yet.
+
+**Phase 4.1 — core:network**
+
+1. **Create the module structure (4.1.1)**  
+   - Create folders: `core/network/`, `core/network/build.gradle.kts`, `core/network/src/main/kotlin/ashraf/pokedex/mad/core/network/` (and optionally `model/`, `service/`, `di/` subpackages).  
+   - Create `core/network/src/main/AndroidManifest.xml` with `<manifest />`.  
+   - In root `settings.gradle.kts`, add `include(":core:network")`.
+
+2. **`core/network/build.gradle.kts` (4.1.2)**  
+   - Plugins: `id("ashraf.pokedex.mad.android.library")`, `alias(libs.plugins.kotlinx.serialization)`.  
+   - Optional: Hilt so you can provide Retrofit from a module — add `id("ashraf.pokedex.mad.android.hilt")` (and `id("ashraf.pokedex.mad.spotless")` if you use Spotless; see Phase 2.6). The Hilt convention plugin applies Hilt + KSP and adds the Hilt deps.  
+   - `android { namespace = "ashraf.pokedex.mad.core.network" }`. If you use `BuildConfig.DEBUG` in NetworkModule, add `buildFeatures { buildConfig = true }`.  
+   - Dependencies: `implementation(projects.core.model)`, `implementation(platform(libs.retrofit.bom))`, `implementation(libs.retrofit)`, `implementation(libs.retrofit.kotlinx.serialization)`, `implementation(platform(libs.okhttp.bom))`, `implementation(libs.okhttp.logging.interceptor)`, `implementation(libs.kotlinx.serialization.json)`, `implementation(libs.kotlinx.coroutines.android)`.
+
+3. **PokemonResponse.kt (4.1.3)**  
+   - Package: `ashraf.pokedex.mad.core.network.model` (or `...core.network`).  
+   - `@Serializable data class PokemonResponse(val count: Int, val next: String?, val previous: String?, val results: List<Pokemon>)`. Use `@SerialName` if JSON keys differ (e.g. `"results"`). Import `Pokemon` from `ashraf.pokedex.mad.core.model`.
+
+4. **PokedexService.kt (4.1.4)**  
+   - Package: `ashraf.pokedex.mad.core.network.service`.  
+   - Retrofit interface with one method: `@GET("pokemon") suspend fun fetchPokemonList(@Query("limit") limit: Int = 20, @Query("offset") offset: Int = 0): PokemonResponse`. Base URL will be set in NetworkModule as `https://pokeapi.co/api/v2/`.
+
+5. **NetworkModule.kt (4.1.5)**  
+   - Package: `ashraf.pokedex.mad.core.network.di`.  
+   - Hilt module: `@Module @InstallIn(SingletonComponent::class) object NetworkModule`.  
+   - Provide `Json` (e.g. `Json { ignoreUnknownKeys = true }`).  
+   - Provide `OkHttpClient` (add `HttpLoggingInterceptor` in debug if you use BuildConfig).  
+   - Provide `Retrofit`: baseUrl `"https://pokeapi.co/api/v2/"`, add `json.asConverterFactory("application/json".toMediaType())`, create with `client(okHttpClient)`.  
+   - Provide `PokedexService`: `retrofit.create(PokedexService::class.java)`.
+
+6. **App depends on core:network (4.1.6)**  
+   - In `app/build.gradle.kts`, add `implementation(projects.core.network)`. Sync; app should build. You can later inject `PokedexService` in a ViewModel or use it from a repository in core:data.
+
+---
+
+### Phase 4.2 — core:database
+
+*Steps will be added when we start Phase 4.2 (Room, DAO, entities).*
+
+---
+
+### Phase 4.3 — core:data
+
+*Steps will be added when we start Phase 4.2 (repositories, offline-first).*
 
 ---
 
@@ -212,7 +318,7 @@ So the root finds plugins from the root’s `pluginManagement` repos **and** fro
 
 ## Phase 7: Code quality (Spotless)
 
-*Steps will be added here when we start this phase.*
+Spotless is already applied via the **Spotless convention plugin** (Phase 2.6): each module that applies `id("ashraf.pokedex.mad.spotless")` gets the same formatting and license-header rules. Root license files are in `spotless/spotless.license.kt` and `spotless/spotless.license.xml`. Run `./gradlew spotlessApply` to fix existing files; use `spotlessCheck` in CI. No extra Spotless steps are required unless you want to add more rules or formats.
 
 ---
 
@@ -228,4 +334,4 @@ So the root finds plugins from the root’s `pluginManagement` repos **and** fro
 
 ---
 
-*Last updated: Phases reordered — Phase 2 = Build logic, Phase 3 = core:model (minimal module).*
+*Last updated: Phase 2.6 added — Hilt and Spotless convention plugins documented with explanation; Phase 4.0/4.1 walkthrough and Phase 7 updated to reference them.*

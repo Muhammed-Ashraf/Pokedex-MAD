@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import ashraf.pokedex.mad.core.model.Pokemon
 import ashraf.pokedex.pokedex.mad.ui.theme.PokedexMADTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,9 +21,15 @@ class MainActivity : ComponentActivity() {
         setContent {
             PokedexMADTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    // Step 3.5: Sample Pokemon from core:model to verify the dependency.
+                    val samplePokemon = Pokemon(
+                        page = 0,
+                        nameField = "pikachu",
+                        url = "https://pokeapi.co/api/v2/pokemon/25/",
+                    )
                     Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
+                        name = samplePokemon.name,
+                        modifier = Modifier.padding(innerPadding),
                     )
                 }
             }
@@ -38,10 +45,15 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     )
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, apiLevel = 34)
 @Composable
 fun GreetingPreview() {
     PokedexMADTheme {
-        Greeting("Android")
+        val samplePokemon = Pokemon(
+            page = 0,
+            nameField = "bulbasaur",
+            url = "https://pokeapi.co/api/v2/pokemon/1/",
+        )
+        Greeting(samplePokemon.name)
     }
 }

@@ -15,6 +15,8 @@ plugins {
     // Needed for @Serializable on model classes (e.g. Pokemon) so we can serialize
     // to/from JSON when using Retrofit or saving to disk.
     alias(libs.plugins.kotlinx.serialization)
+
+    id("ashraf.pokedex.mad.spotless")
 }
 
 android {
