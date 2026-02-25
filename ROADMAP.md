@@ -202,6 +202,43 @@ After this, module `plugins { }` blocks match the reference style: one line per 
 
 ---
 
+### Review vs reference (before proceeding to Phase 4.1.3)
+
+Use this checklist to confirm nothing is missed compared to the reference project for what we've built so far.
+
+**Aligned (no action):**
+
+| Area | Reference | Yours | Notes |
+|------|-----------|--------|--------|
+| settings.gradle.kts | includeBuild, TYPESAFE_PROJECT_ACCESSORS, include app, core:model, core:network | Same | You have fewer includes (no feature/core:data yet) — expected. |
+| Root build.gradle.kts | apply false for app, library, kotlin, hilt, ksp, etc. | Same | Reference also applies Spotless at root; we apply per-module — both valid. |
+| App | Hilt + Spotless via convention plugins; Application @HiltAndroidApp | Same | Reference also uses application + application.compose convention plugins; we apply android/kotlin/compose in app explicitly — OK. |
+| core:model | library + serialization + spotless, namespace, kotlinx.serialization.json | Same | Reference adds parcelize, ksp, stable.marker, immutable — see Optional below. |
+| core:network | library + hilt + spotless + serialization, Retrofit, OkHttp, coroutines, core:model | Same | Reference has buildConfig = true, core:test, Sandwich; we have buildConfig commented — see below. |
+| build-logic | androidLibrary, androidHilt, spotless registered; Spotless as implementation for runtime | Same | Reference may use compileOnly(spotless); we use implementation so SpotlessExtension loads — documented. |
+
+**Optional / add later (not required before 4.1.3):**
+
+| Item | Reference | When to add |
+|------|-----------|-------------|
+| Root Spotless | Reference applies `alias(libs.plugins.spotless)` at root (no apply false). | Optional; we apply Spotless per module via convention plugin. Add at root only if you want root scripts formatted the same way. |
+| core:model — kotlin.parcelize | Reference has it. | When you need Parcelable (e.g. passing Pokemon via Navigation or savedStateHandle). |
+| core:model — ksp | Reference has it. | Only if you add a dependency that uses KSP in core:model; skip for now. |
+| core:model — compose.stable.marker, kotlinx.immutable.collection | Reference has compileOnly(stable.marker), api(immutable.collection). | When you want Compose stability checking or immutable collections in model; not required for PokeAPI flow. |
+| Application convention plugin | Reference has android.application + android.application.compose so app has no android { } block. | Phase 5 or later if you want app build to be minimal like reference; current app config is fine. |
+| core:network — core:test, mockwebserver | Reference has testImplementation(core.test), mockwebserver, arch.core.testing. | When you add core:test and write network tests (Phase 6). |
+
+**Do before or while doing 4.1.3–4.1.6:**
+
+| Item | Action |
+|------|--------|
+| core:network — buildConfig | Uncomment `buildFeatures { buildConfig = true }` in `core/network/build.gradle.kts` when you add NetworkModule.kt that uses `BuildConfig.DEBUG` for logging (e.g. HttpLoggingInterceptor). |
+| app — core:network dependency | Add `implementation(projects.core.network)` in app in step 4.1.6 after NetworkModule exists. |
+
+**Summary:** You are in adherence with the reference for Phases 1, 2, 3, 4.0, and 4.1 (build/config). The only thing to remember when you add NetworkModule is to enable `buildConfig` in core:network if you use `BuildConfig.DEBUG`. No missing steps for the current scope.
+
+---
+
 ## Phase 3: First core module — `core:model`
 
 **Concept:** `core:model` holds shared data classes (e.g. `Pokemon`). No Android UI, Room, or Retrofit—only Kotlin and kotlinx.serialization. Because you have the convention plugin (Phase 2), this module’s `build.gradle.kts` is minimal: apply the plugin + serialization, set `namespace`, add dependencies. No compileSdk/minSdk in this file.

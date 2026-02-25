@@ -9,19 +9,17 @@
 plugins {
     // Same as core:model — Android library + Kotlin + compileSdk 36, minSdk, Java 17.
     id("ashraf.pokedex.mad.android.library")
-
-    // Needed for @Serializable on PokemonResponse and for Json in NetworkModule.
-    alias(libs.plugins.kotlinx.serialization)
-
     // Hilt + KSP + deps (hilt.android, hilt.compiler, hilt-navigation-compose) in one plugin.
     id("ashraf.pokedex.mad.android.hilt")
     id("ashraf.pokedex.mad.spotless")
+    // Needed for @Serializable on PokemonResponse and for Json in NetworkModule.
+    alias(libs.plugins.kotlinx.serialization)
 }
 
 android {
     namespace = "ashraf.pokedex.mad.core.network"
     // If you use BuildConfig.DEBUG in NetworkModule for logging, uncomment:
-    // buildFeatures { buildConfig = true }
+     buildFeatures { buildConfig = true }
 }
 
 dependencies {
