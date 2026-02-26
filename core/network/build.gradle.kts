@@ -35,6 +35,9 @@ dependencies {
     implementation(platform(libs.okhttp.bom))
     implementation(libs.okhttp.logging.interceptor)
 
+    // --- Sandwich: wraps Retrofit responses in ApiResponse.Success / ApiResponse.Failure for consistent handling (see reference).
+    implementation(libs.sandwich)
+
     // --- JSON serialization (Retrofit converter uses this; @Serializable uses it too).
     implementation(libs.kotlinx.serialization.json)
 
