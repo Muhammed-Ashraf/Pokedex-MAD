@@ -202,6 +202,43 @@ After this, module `plugins { }` blocks match the reference style: one line per 
 
 ---
 
+### Review vs reference (before proceeding to Phase 4.1.3)
+
+Use this checklist to confirm nothing is missed compared to the reference project for what we've built so far.
+
+**Aligned (no action):**
+
+| Area | Reference | Yours | Notes |
+|------|-----------|--------|--------|
+| settings.gradle.kts | includeBuild, TYPESAFE_PROJECT_ACCESSORS, include app, core:model, core:network | Same | You have fewer includes (no feature/core:data yet) — expected. |
+| Root build.gradle.kts | apply false for app, library, kotlin, hilt, ksp, etc. | Same | Reference also applies Spotless at root; we apply per-module — both valid. |
+| App | Hilt + Spotless via convention plugins; Application @HiltAndroidApp | Same | Reference also uses application + application.compose convention plugins; we apply android/kotlin/compose in app explicitly — OK. |
+| core:model | library + serialization + spotless, namespace, kotlinx.serialization.json | Same | Reference adds parcelize, ksp, stable.marker, immutable — see Optional below. |
+| core:network | library + hilt + spotless + serialization, Retrofit, OkHttp, coroutines, core:model | Same | Reference has buildConfig = true, core:test, Sandwich; we have buildConfig commented — see below. |
+| build-logic | androidLibrary, androidHilt, spotless registered; Spotless as implementation for runtime | Same | Reference may use compileOnly(spotless); we use implementation so SpotlessExtension loads — documented. |
+
+**Optional / add later (not required before 4.1.3):**
+
+| Item | Reference | When to add |
+|------|-----------|-------------|
+| Root Spotless | Reference applies `alias(libs.plugins.spotless)` at root (no apply false). | Optional; we apply Spotless per module via convention plugin. Add at root only if you want root scripts formatted the same way. |
+| core:model — kotlin.parcelize | Reference has it. | When you need Parcelable (e.g. passing Pokemon via Navigation or savedStateHandle). |
+| core:model — ksp | Reference has it. | Only if you add a dependency that uses KSP in core:model; skip for now. |
+| core:model — compose.stable.marker, kotlinx.immutable.collection | Reference has compileOnly(stable.marker), api(immutable.collection). | When you want Compose stability checking or immutable collections in model; not required for PokeAPI flow. |
+| Application convention plugin | Reference has android.application + android.application.compose so app has no android { } block. | Phase 5 or later if you want app build to be minimal like reference; current app config is fine. |
+| core:network — core:test, mockwebserver | Reference has testImplementation(core.test), mockwebserver, arch.core.testing. | When you add core:test and write network tests (Phase 6). |
+
+**Do before or while doing 4.1.3–4.1.6:**
+
+| Item | Action |
+|------|--------|
+| core:network — buildConfig | Uncomment `buildFeatures { buildConfig = true }` in `core/network/build.gradle.kts` when you add NetworkModule.kt that uses `BuildConfig.DEBUG` for logging (e.g. HttpLoggingInterceptor). |
+| app — core:network dependency | Add `implementation(projects.core.network)` in app in step 4.1.6 after NetworkModule exists. |
+
+**Summary:** You are in adherence with the reference for Phases 1, 2, 3, 4.0, and 4.1 (build/config). The only thing to remember when you add NetworkModule is to enable `buildConfig` in core:network if you use `BuildConfig.DEBUG`. No missing steps for the current scope.
+
+---
+
 ## Phase 3: First core module — `core:model`
 
 **Concept:** `core:model` holds shared data classes (e.g. `Pokemon`). No Android UI, Room, or Retrofit—only Kotlin and kotlinx.serialization. Because you have the convention plugin (Phase 2), this module’s `build.gradle.kts` is minimal: apply the plugin + serialization, set `namespace`, add dependencies. No compileSdk/minSdk in this file.
@@ -294,7 +331,18 @@ After this, module `plugins { }` blocks match the reference style: one line per 
 
 ### Phase 4.2 — core:database
 
-*Steps will be added when we start Phase 4.2 (Room, DAO, entities).*
+**Concept:** Room cache for the Pokemon list (and later detail). `core:data` will read from the DAO and write from network. We keep Room-specific types in `core:database` and map to/from `core:model.Pokemon`.
+
+| Step | Task | Status |
+|------|------|--------|
+| 4.2.1 | Create `core/database/` with `build.gradle.kts`, `src/main/AndroidManifest.xml`, `src/main/kotlin/` + package path (e.g. `ashraf/pokedex/mad/core/database/`). Add `include(":core:database")` in `settings.gradle.kts`. | ⬜ |
+| 4.2.2 | In `core/database/build.gradle.kts`: apply `id("ashraf.pokedex.mad.android.library")`, `id("ashraf.pokedex.mad.android.hilt")`, `id("ashraf.pokedex.mad.spotless")`, `alias(libs.plugins.ksp)`. Set `namespace = "ashraf.pokedex.mad.core.database"`. In `android { defaultConfig { ksp { arg("room.schemaLocation", "$projectDir/schemas") } } }` and in `sourceSets["test"]` add `assets.srcDir("$projectDir/schemas")`. Deps: `implementation(projects.core.model)`, `implementation(libs.androidx.room.runtime)`, `implementation(libs.androidx.room.ktx)`, `ksp(libs.androidx.room.compiler)`, `implementation(libs.kotlinx.coroutines.android)`. | ⬜ |
+| 4.2.3 | Add **PokemonEntity** in `entity/` (tableName = `"pokemon"`, fields: `page: Int`, `name: String` as `@PrimaryKey`, `url: String`). Add **PokemonDao** (insert list, get page, get all up to page). Add **PokedexDatabase** (`@Database(entities = [PokemonEntity], version = 1, exportSchema = true)`) with `abstract fun pokemonDao(): PokemonDao`. | ⬜ |
+| 4.2.4 | Add Hilt **DatabaseModule** in `di/` that provides `PokedexDatabase` (using `Room.databaseBuilder(application, PokedexDatabase::class.java, "Pokedex.db").fallbackToDestructiveMigration().build()`) and `PokemonDao` from the database. | ⬜ |
+| 4.2.5 | Add an **EntityMapper** interface and **PokemonEntityMapper** in `entity/mapper/` that converts between `List<Pokemon>` and `List<PokemonEntity>` plus extension functions `List<Pokemon>.asEntity()` and `List<PokemonEntity>?.asDomain()`. This mirrors the reference and keeps Room types out of `core:model`. | ⬜ |
+| 4.2.6 | In `app/build.gradle.kts` add `implementation(projects.core.database)`. Sync; app should build (no UI change yet). | ⬜ |
+
+**Reference:** `core/database/` in pokedex-compose (build.gradle.kts, PokemonEntity, PokemonDao, PokedexDatabase, DatabaseModule, entity mappers). We will start with only the list entity/DAO; detail entities and converters can be added later when we implement the detail screen.
 
 ---
 

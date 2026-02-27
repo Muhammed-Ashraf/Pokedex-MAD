@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  core:model has no activities, services, or permissions.
+  This minimal manifest is merged into the app at build time.
+  AGP would auto-generate one if missing; having it explicitly matches the reference and keeps the merge predictable.
+-->
+<manifest />

@@ -61,4 +61,5 @@ dependencies {
 
     // cores
     implementation(projects.core.model)
+    implementation(projects.core.network)
 }
