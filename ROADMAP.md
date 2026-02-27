@@ -331,7 +331,18 @@ Use this checklist to confirm nothing is missed compared to the reference projec
 
 ### Phase 4.2 — core:database
 
-*Steps will be added when we start Phase 4.2 (Room, DAO, entities).*
+**Concept:** Room cache for the Pokemon list (and later detail). `core:data` will read from the DAO and write from network. We keep Room-specific types in `core:database` and map to/from `core:model.Pokemon`.
+
+| Step | Task | Status |
+|------|------|--------|
+| 4.2.1 | Create `core/database/` with `build.gradle.kts`, `src/main/AndroidManifest.xml`, `src/main/kotlin/` + package path (e.g. `ashraf/pokedex/mad/core/database/`). Add `include(":core:database")` in `settings.gradle.kts`. | ⬜ |
+| 4.2.2 | In `core/database/build.gradle.kts`: apply `id("ashraf.pokedex.mad.android.library")`, `id("ashraf.pokedex.mad.android.hilt")`, `id("ashraf.pokedex.mad.spotless")`, `alias(libs.plugins.ksp)`. Set `namespace = "ashraf.pokedex.mad.core.database"`. In `android { defaultConfig { ksp { arg("room.schemaLocation", "$projectDir/schemas") } } }` and in `sourceSets["test"]` add `assets.srcDir("$projectDir/schemas")`. Deps: `implementation(projects.core.model)`, `implementation(libs.androidx.room.runtime)`, `implementation(libs.androidx.room.ktx)`, `ksp(libs.androidx.room.compiler)`, `implementation(libs.kotlinx.coroutines.android)`. | ⬜ |
+| 4.2.3 | Add **PokemonEntity** in `entity/` (tableName = `"pokemon"`, fields: `page: Int`, `name: String` as `@PrimaryKey`, `url: String`). Add **PokemonDao** (insert list, get page, get all up to page). Add **PokedexDatabase** (`@Database(entities = [PokemonEntity], version = 1, exportSchema = true)`) with `abstract fun pokemonDao(): PokemonDao`. | ⬜ |
+| 4.2.4 | Add Hilt **DatabaseModule** in `di/` that provides `PokedexDatabase` (using `Room.databaseBuilder(application, PokedexDatabase::class.java, "Pokedex.db").fallbackToDestructiveMigration().build()`) and `PokemonDao` from the database. | ⬜ |
+| 4.2.5 | Add an **EntityMapper** interface and **PokemonEntityMapper** in `entity/mapper/` that converts between `List<Pokemon>` and `List<PokemonEntity>` plus extension functions `List<Pokemon>.asEntity()` and `List<PokemonEntity>?.asDomain()`. This mirrors the reference and keeps Room types out of `core:model`. | ⬜ |
+| 4.2.6 | In `app/build.gradle.kts` add `implementation(projects.core.database)`. Sync; app should build (no UI change yet). | ⬜ |
+
+**Reference:** `core/database/` in pokedex-compose (build.gradle.kts, PokemonEntity, PokemonDao, PokedexDatabase, DatabaseModule, entity mappers). We will start with only the list entity/DAO; detail entities and converters can be added later when we implement the detail screen.
 
 ---
 

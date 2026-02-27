@@ -27,4 +27,5 @@ rootProject.name = "Pokedex-MAD"
 include(":app")
 include(":core:model")
 include(":core:network")
+include(":core:database")
  
