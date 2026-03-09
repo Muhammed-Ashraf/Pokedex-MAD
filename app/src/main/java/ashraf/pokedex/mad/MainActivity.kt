@@ -1,4 +1,4 @@
-package ashraf.pokedex.pokedex.mad
+package ashraf.pokedex.mad
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -12,7 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import ashraf.pokedex.mad.core.model.Pokemon
-import ashraf.pokedex.pokedex.mad.ui.theme.PokedexMADTheme
+import ashraf.pokedex.mad.ui.theme.PokedexMADTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

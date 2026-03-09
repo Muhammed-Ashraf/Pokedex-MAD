@@ -348,7 +348,18 @@ Use this checklist to confirm nothing is missed compared to the reference projec
 
 ### Phase 4.3 — core:data
 
-*Steps will be added when we start Phase 4.2 (repositories, offline-first).*
+**Concept:** Data layer that combines **core:network** (Retrofit + Sandwich) and **core:database** (Room) behind repository interfaces. UI/ViewModels depend only on core:data; they never talk to Retrofit or Room directly. Start with the home/list flow first; detail flow and tests come in later subphases.
+
+| Step | Task | Status |
+|------|------|--------|
+| 4.3.1 | Create `core/data/` with `build.gradle.kts`, `src/main/AndroidManifest.xml`, `src/main/kotlin/` + package path (e.g. `ashraf/pokedex/mad/core/data/`). Add `include(":core:data")` in `settings.gradle.kts`. | ⬜ |
+| 4.3.2 | In `core/data/build.gradle.kts`: apply `id("ashraf.pokedex.mad.android.library")`, `id("ashraf.pokedex.mad.android.hilt")`, `id("ashraf.pokedex.mad.spotless")`. Set `namespace = "ashraf.pokedex.mad.core.data"`. Deps: `implementation(projects.core.model)`, `implementation(projects.core.network)`, `implementation(projects.core.database)`, `implementation(libs.kotlinx.coroutines.android)`. | ⬜ |
+| 4.3.3 | Define a **HomeRepository** interface in `core/data` (e.g. `fetchPokemonList(page, onStart, onComplete, onLastPageReached, onError): Flow<List<Pokemon>>`), mirroring the reference shape. | ⬜ |
+| 4.3.4 | Implement **HomeRepositoryImpl**: inject `PokedexService`/`PokedexClient` and `PokemonDao`; implement offline-first flow similar to reference: try DB; if empty, call network (Sandwich ApiResponse), on success store to DB and emit; on failure, call `onError`. Use mappers `List<Pokemon>.asEntity()` / `List<PokemonEntity>?.asDomain()`. | ⬜ |
+| 4.3.5 | Add a **DataModule** (Hilt) in `core/data` that binds `HomeRepository` to `HomeRepositoryImpl` (e.g. with `@Binds` or `@Provides`). | ⬜ |
+| 4.3.6 | In `app/build.gradle.kts` add `implementation(projects.core.data)`. Later, ViewModels in feature modules will inject `HomeRepository` and expose UI state. | ⬜ |
+
+**Reference:** `core/data` in pokedex-compose (HomeRepositoryImpl, DetailsRepositoryImpl, DI bindings). We start with the home/list flow (HomeRepository); detail flow and tests will be added in dedicated subphases so you can focus on one concept at a time.
 
 ---
 

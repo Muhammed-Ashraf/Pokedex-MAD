@@ -1,4 +1,4 @@
-package ashraf.pokedex.pokedex.mad
+package ashraf.pokedex.mad
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("ashraf.pokedex.pokedex.mad", appContext.packageName)
+        assertEquals("ashraf.pokedex.mad", appContext.packageName)
     }
 }
