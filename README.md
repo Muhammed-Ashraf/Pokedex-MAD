@@ -1,7 +1,6 @@
 ## Pokedex-MAD (Work in Progress)
 
-Portfolio / learning Android project built step-by-step, inspired by the reference project
-[skydoves/pokedex-compose](https://github.com/skydoves/pokedex-compose).
+Portfolio / learning Android project built step-by-step.
 
 ### Goals
 - Practice modern Android development (MAD): modularization, DI, network + cache, clean layering.
