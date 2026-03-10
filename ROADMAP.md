@@ -363,6 +363,21 @@ Use this checklist to confirm nothing is missed compared to the reference projec
 
 ---
 
+## Phase 4.4: Build-logic upgrade — App convention plugin (recommended)
+
+**Concept:** Align the app module with the reference by moving shared Android/Kotlin/Compose config (compileSdk/minSdk/targetSdk, Java 17, Compose setup) into **convention plugins**. This keeps `app/build.gradle.kts` minimal and consistent as the project grows.
+
+**When:** Do this **right after Phase 4.3** and **before Phase 5**.
+
+| Step | Task | Status |
+|------|------|--------|
+| 4.4.1 | In `build-logic/convention/`, add an **application** convention plugin (e.g. `AndroidApplicationConventionPlugin.kt`) that applies `com.android.application` + `org.jetbrains.kotlin.android` and configures compileSdk/minSdk/targetSdk + Java 17. Register it with id `ashraf.pokedex.mad.android.application`. | ⬜ |
+| 4.4.2 | (Optional) Add an **application.compose** convention plugin that enables Compose (`buildFeatures.compose = true`), sets `composeOptions.kotlinCompilerExtensionVersion` if needed, and adds Compose BOM + core Compose deps. Register it with id `ashraf.pokedex.mad.android.application.compose`. | ⬜ |
+| 4.4.3 | Update `app/build.gradle.kts` to use the new convention plugin id(s) and delete duplicated `android { }` config that is now provided by build-logic (keep app-specific config only). | ⬜ |
+| 4.4.4 | Sync and run `:app:assembleDebug` to confirm the app still builds. | ⬜ |
+
+---
+
 ## Phase 5: Navigation and feature modules
 
 *Steps will be added here when we start this phase.*
@@ -393,4 +408,4 @@ Spotless is already applied via the **Spotless convention plugin** (Phase 2.6): 
 
 ---
 
-*Last updated: Phase 2.6 added — Hilt and Spotless convention plugins documented with explanation; Phase 4.0/4.1 walkthrough and Phase 7 updated to reference them.*
+*Last updated: Added Phase 4.4 (recommended app convention plugin)*
