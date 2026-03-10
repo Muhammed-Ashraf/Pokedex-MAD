@@ -1,4 +1,4 @@
-package ashraf.pokedex.pokedex.mad.ui.theme
+package ashraf.pokedex.mad.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

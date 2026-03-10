@@ -1,4 +1,4 @@
-package ashraf.pokedex.pokedex.mad
+package ashraf.pokedex.mad
 
 import org.junit.Test
 

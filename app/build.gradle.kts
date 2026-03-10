@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "ashraf.pokedex.pokedex.mad"
+    namespace = "ashraf.pokedex.mad"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "ashraf.pokedex.pokedex.mad"
+        applicationId = "ashraf.pokedex.mad"
         minSdk = 29
         targetSdk = 36
         versionCode = 1
@@ -62,4 +62,5 @@ dependencies {
     // cores
     implementation(projects.core.model)
     implementation(projects.core.network)
+    implementation(projects.core.database)
 }

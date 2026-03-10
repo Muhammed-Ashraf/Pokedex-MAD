@@ -1,6 +1,5 @@
-package ashraf.pokedex.pokedex.mad.ui.theme
+package ashraf.pokedex.mad.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
