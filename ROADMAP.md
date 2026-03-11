@@ -346,24 +346,39 @@ Use this checklist to confirm nothing is missed compared to the reference projec
 
 ---
 
-### Phase 4.3 — core:data
+## Phase 4.3 — core:common (utilities + PokedexClient alignment)
+
+**Concept:** Introduce a JVM-only `core:common` module like the reference project. It holds shared utilities (e.g. dispatcher providers, error mappers) that do not depend on Android, and lets the network/data layers share common logic. We will also add `PokedexClient` so `HomeRepositoryImpl` matches the reference structure more closely.
+
+**When:** Do this after 4.2 (core:database) and before 4.4 (app convention plugin) and feature/UI work.
+
+| Step | Task | Status |
+|------|------|--------|
+| 4.3.1 | Create `core/common/` module as a pure Kotlin/JVM module (no Android plugin). Add it to `settings.gradle.kts` as `include(":core:common")`. Configure its `build.gradle.kts` with Kotlin JVM plugin, Java 17, and basic test dependencies. | ⬜ |
+| 4.3.2 | Add small shared utilities in `core:common` (e.g. a `DispatcherProvider` interface, simple error/message helpers) that can be used by both `core:network` and `core:data` without depending on Android. | ⬜ |
+| 4.3.3 | In `core/network`, add a `PokedexClient` class (matching the reference shape) that wraps `PokedexService` + Sandwich handling. Use `core:common` helpers inside it if needed. | ⬜ |
+| 4.3.4 | Refactor `HomeRepositoryImpl` in `core:data` to inject `PokedexClient` instead of `PokedexService` directly, and move low-level ApiResponse/Sandwich handling into `PokedexClient` so repositories stay thinner. | ⬜ |
+
+---
+
+### Phase 4.4 — core:data
 
 **Concept:** Data layer that combines **core:network** (Retrofit + Sandwich) and **core:database** (Room) behind repository interfaces. UI/ViewModels depend only on core:data; they never talk to Retrofit or Room directly. Start with the home/list flow first; detail flow and tests come in later subphases.
 
 | Step | Task | Status |
 |------|------|--------|
-| 4.3.1 | Create `core/data/` with `build.gradle.kts`, `src/main/AndroidManifest.xml`, `src/main/kotlin/` + package path (e.g. `ashraf/pokedex/mad/core/data/`). Add `include(":core:data")` in `settings.gradle.kts`. | ⬜ |
-| 4.3.2 | In `core/data/build.gradle.kts`: apply `id("ashraf.pokedex.mad.android.library")`, `id("ashraf.pokedex.mad.android.hilt")`, `id("ashraf.pokedex.mad.spotless")`. Set `namespace = "ashraf.pokedex.mad.core.data"`. Deps: `implementation(projects.core.model)`, `implementation(projects.core.network)`, `implementation(projects.core.database)`, `implementation(libs.kotlinx.coroutines.android)`. | ⬜ |
-| 4.3.3 | Define a **HomeRepository** interface in `core/data` (e.g. `fetchPokemonList(page, onStart, onComplete, onLastPageReached, onError): Flow<List<Pokemon>>`), mirroring the reference shape. | ⬜ |
-| 4.3.4 | Implement **HomeRepositoryImpl**: inject `PokedexService`/`PokedexClient` and `PokemonDao`; implement offline-first flow similar to reference: try DB; if empty, call network (Sandwich ApiResponse), on success store to DB and emit; on failure, call `onError`. Use mappers `List<Pokemon>.asEntity()` / `List<PokemonEntity>?.asDomain()`. | ⬜ |
-| 4.3.5 | Add a **DataModule** (Hilt) in `core/data` that binds `HomeRepository` to `HomeRepositoryImpl` (e.g. with `@Binds` or `@Provides`). | ⬜ |
-| 4.3.6 | In `app/build.gradle.kts` add `implementation(projects.core.data)`. Later, ViewModels in feature modules will inject `HomeRepository` and expose UI state. | ⬜ |
+| 4.4.1 | Create `core/data/` with `build.gradle.kts`, `src/main/AndroidManifest.xml`, `src/main/kotlin/` + package path (e.g. `ashraf/pokedex/mad/core/data/`). Add `include(":core:data")` in `settings.gradle.kts`. | ⬜ |
+| 4.4.2 | In `core/data/build.gradle.kts`: apply `id("ashraf.pokedex.mad.android.library")`, `id("ashraf.pokedex.mad.android.hilt")`, `id("ashraf.pokedex.mad.spotless")`. Set `namespace = "ashraf.pokedex.mad.core.data"`. Deps: `implementation(projects.core.model)`, `implementation(projects.core.network)`, `implementation(projects.core.database)`, `implementation(libs.kotlinx.coroutines.android)`. | ⬜ |
+| 4.4.3 | Define a **HomeRepository** interface in `core/data` (e.g. `fetchPokemonList(page, onStart, onComplete, onLastPageReached, onError): Flow<List<Pokemon>>`), mirroring the reference shape. | ⬜ |
+| 4.4.4 | Implement **HomeRepositoryImpl**: inject `PokedexClient` and `PokemonDao`; implement offline-first flow similar to reference: try DB; if empty, call network (Sandwich ApiResponse), on success store to DB and emit; on failure, call `onError`. Use mappers `List<Pokemon>.asEntity()` / `List<PokemonEntity>?.asDomain()`. | ⬜ |
+| 4.4.5 | Add a **DataModule** (Hilt) in `core/data` that binds `HomeRepository` to `HomeRepositoryImpl` (e.g. with `@Binds` or `@Provides`). | ⬜ |
+| 4.4.6 | In `app/build.gradle.kts` add `implementation(projects.core.data)`. Later, ViewModels in feature modules will inject `HomeRepository` and expose UI state. | ⬜ |
 
 **Reference:** `core/data` in pokedex-compose (HomeRepositoryImpl, DetailsRepositoryImpl, DI bindings). We start with the home/list flow (HomeRepository); detail flow and tests will be added in dedicated subphases so you can focus on one concept at a time.
 
 ---
 
-## Phase 4.4: Build-logic upgrade — App convention plugin (recommended)
+## Phase 4.5: Build-logic upgrade — App convention plugin (recommended)
 
 **Concept:** Align the app module with the reference by moving shared Android/Kotlin/Compose config (compileSdk/minSdk/targetSdk, Java 17, Compose setup) into **convention plugins**. This keeps `app/build.gradle.kts` minimal and consistent as the project grows.
 
