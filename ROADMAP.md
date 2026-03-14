@@ -257,7 +257,7 @@ Use this checklist to confirm nothing is missed compared to the reference projec
 
 **Concept:** Add the data layer: **core:network** (Retrofit + PokeAPI), **core:database** (Room cache), **core:data** (repositories that use both). ViewModels and UI will depend only on **core:data**; they never touch Retrofit or Room directly.
 
-**Order:** Do 4.1 (network) first, then 4.2 (database), then 4.3 (data). You need Hilt in the app before core:network provides a Retrofit service via DI.
+**Order:** 4.0 (Hilt in app) → 4.1 (network) → 4.2 (database) → **4.3 (core:common)** → **4.4 (core:data)** → 4.5 (app convention plugin). We do **core:common before core:data** so that PokedexClient and repositories can follow the reference structure from the start.
 
 ---
 
@@ -346,18 +346,20 @@ Use this checklist to confirm nothing is missed compared to the reference projec
 
 ---
 
-## Phase 4.3 — core:common (utilities + PokedexClient alignment)
+## Phase 4.3 — core:common (utilities) + PokedexClient in core:network
 
-**Concept:** Introduce a JVM-only `core:common` module like the reference project. It holds shared utilities (e.g. dispatcher providers, error mappers) that do not depend on Android, and lets the network/data layers share common logic. We will also add `PokedexClient` so `HomeRepositoryImpl` matches the reference structure more closely.
+**Concept:** Introduce a JVM-only `core:common` module like the reference project. It holds Hilt qualifiers and modules for dispatchers and app CoroutineScope (no Android dependency). Then add `PokedexClient` in `core:network` so repositories inject it instead of `PokedexService` directly.
 
-**When:** Do this after 4.2 (core:database) and before 4.4 (app convention plugin) and feature/UI work.
+**When:** After 4.2 (core:database), before 4.4 (core:data). This order lets core:data use PokedexClient from the start.
 
 | Step | Task | Status |
 |------|------|--------|
-| 4.3.1 | Create `core/common/` module as a pure Kotlin/JVM module (no Android plugin). Add it to `settings.gradle.kts` as `include(":core:common")`. Configure its `build.gradle.kts` with Kotlin JVM plugin, Java 17, and basic test dependencies. | ⬜ |
-| 4.3.2 | Add small shared utilities in `core:common` (e.g. a `DispatcherProvider` interface, simple error/message helpers) that can be used by both `core:network` and `core:data` without depending on Android. | ⬜ |
-| 4.3.3 | In `core/network`, add a `PokedexClient` class (matching the reference shape) that wraps `PokedexService` + Sandwich handling. Use `core:common` helpers inside it if needed. | ⬜ |
-| 4.3.4 | Refactor `HomeRepositoryImpl` in `core:data` to inject `PokedexClient` instead of `PokedexService` directly, and move low-level ApiResponse/Sandwich handling into `PokedexClient` so repositories stay thinner. | ⬜ |
+| 4.3.1 | Create `core/common/` as a **pure Kotlin/JVM** module. In `settings.gradle.kts` add `include(":core:common")`. In `core/common/build.gradle.kts`: use **`kotlin("jvm")`** (not `alias(libs.plugins.kotlin.jvm)` — see note below), `alias(libs.plugins.ksp)`. Deps: `implementation(libs.hilt.core)`, `implementation(libs.kotlinx.coroutines.core)`, `ksp(libs.hilt.compiler)`. No AndroidManifest; no `android {}` block. | ⬜ |
+| 4.3.2 | **Strict mirror of reference** `core/common`: add in package `ashraf.pokedex.mad.core.common.network` — **PokedexAppScope.kt** (qualifier), **PokedexAppDispatchers.kt** (qualifier `@Dispatcher` + enum `PokedexAppDispatchers { IO }`), **DispatchersModule.kt** (provides IO dispatcher), **CoroutineScopesModule.kt** (provides app-wide `CoroutineScope` with `@PokedexAppScope`). Copy structure from reference `core/common/src/main/java/.../core/common/network/`. | ⬜ |
+| 4.3.3 | In **core:network**, add **PokedexClient** in package `ashraf.pokedex.mad.core.network.service`: inject `PokedexService`, expose `suspend fun fetchPokemonList(page: Int): ApiResponse<PokemonResponse>` (page → limit/offset internally, e.g. page size 20). Ensure `core:network` has Sandwich dependency. | ⬜ |
+| 4.3.4 | (Done in Phase 4.4.) When implementing **HomeRepositoryImpl** in core:data, inject **PokedexClient** (not PokedexService) and use its `fetchPokemonList(page)`; handle `ApiResponse` with Sandwich operators in the repository. | ⬜ |
+
+**Note (4.3.1):** The reference uses `alias(libs.plugins.kotlin.jvm)`. In this project the Kotlin plugin is already on the classpath (build-logic/root), so applying the JVM plugin with a version via the catalog causes a conflict. Use `kotlin("jvm")` in `core/common/build.gradle.kts` instead; behavior is the same.
 
 ---
 
@@ -378,18 +380,18 @@ Use this checklist to confirm nothing is missed compared to the reference projec
 
 ---
 
-## Phase 4.5: Build-logic upgrade — App convention plugin (recommended)
+## Phase 4.5 — Build-logic upgrade: App convention plugin (recommended)
 
 **Concept:** Align the app module with the reference by moving shared Android/Kotlin/Compose config (compileSdk/minSdk/targetSdk, Java 17, Compose setup) into **convention plugins**. This keeps `app/build.gradle.kts` minimal and consistent as the project grows.
 
-**When:** Do this **right after Phase 4.3** and **before Phase 5**.
+**When:** Do this **right after Phase 4.4 (core:data)** and **before Phase 5**.
 
 | Step | Task | Status |
 |------|------|--------|
-| 4.4.1 | In `build-logic/convention/`, add an **application** convention plugin (e.g. `AndroidApplicationConventionPlugin.kt`) that applies `com.android.application` + `org.jetbrains.kotlin.android` and configures compileSdk/minSdk/targetSdk + Java 17. Register it with id `ashraf.pokedex.mad.android.application`. | ⬜ |
-| 4.4.2 | (Optional) Add an **application.compose** convention plugin that enables Compose (`buildFeatures.compose = true`), sets `composeOptions.kotlinCompilerExtensionVersion` if needed, and adds Compose BOM + core Compose deps. Register it with id `ashraf.pokedex.mad.android.application.compose`. | ⬜ |
-| 4.4.3 | Update `app/build.gradle.kts` to use the new convention plugin id(s) and delete duplicated `android { }` config that is now provided by build-logic (keep app-specific config only). | ⬜ |
-| 4.4.4 | Sync and run `:app:assembleDebug` to confirm the app still builds. | ⬜ |
+| 4.5.1 | In `build-logic/convention/`, add an **application** convention plugin (e.g. `AndroidApplicationConventionPlugin.kt`) that applies `com.android.application` + `org.jetbrains.kotlin.android` and configures compileSdk/minSdk/targetSdk + Java 17. Register it with id `ashraf.pokedex.mad.android.application`. | ⬜ |
+| 4.5.2 | (Optional) Add an **application.compose** convention plugin that enables Compose (`buildFeatures.compose = true`), sets `composeOptions.kotlinCompilerExtensionVersion` if needed, and adds Compose BOM + core Compose deps. Register it with id `ashraf.pokedex.mad.android.application.compose`. | ⬜ |
+| 4.5.3 | Update `app/build.gradle.kts` to use the new convention plugin id(s) and delete duplicated `android { }` config that is now provided by build-logic (keep app-specific config only). | ⬜ |
+| 4.5.4 | Sync and run `:app:assembleDebug` to confirm the app still builds. | ⬜ |
 
 ---
 
@@ -423,4 +425,21 @@ Spotless is already applied via the **Spotless convention plugin** (Phase 2.6): 
 
 ---
 
-*Last updated: Added Phase 4.4 (recommended app convention plugin)*
+---
+
+### Phase 4 — Path we followed (summary for learners)
+
+| Order | Phase   | What we did |
+|-------|---------|-------------|
+| 1     | 4.0     | Hilt in app (Application + manifest). |
+| 2     | 4.1     | core:network (Retrofit, PokedexService, PokemonResponse, NetworkModule). |
+| 3     | 4.2     | core:database (Room, PokemonEntity, PokemonDao, DatabaseModule, entity mappers). |
+| 4     | **4.3** | **core:common** (JVM module with `kotlin("jvm")` + KSP + Hilt core; then PokedexAppScope, Dispatcher/PokedexAppDispatchers, DispatchersModule, CoroutineScopesModule). **PokedexClient** in core:network (service package, `fetchPokemonList(page)`). |
+| 5     | **4.4** | **core:data** (module shell, HomeRepository interface, then HomeRepositoryImpl using PokedexClient + PokemonDao, DataModule, app depends on core:data). |
+| 6     | 4.5     | App convention plugin (optional, before Phase 5). |
+
+**Adjustments made along the way:** (1) core:common uses `kotlin("jvm")` instead of catalog alias for Kotlin JVM plugin to avoid classpath conflict. (2) core:common utilities are a strict mirror of the reference (qualifiers + dispatcher/scope modules only). (3) PokedexClient lives in `core:network.service` and is used by HomeRepositoryImpl in core:data.
+
+---
+
+*Last updated: Phase 4 order and steps aligned with actual path; 4.3/4.4/4.5 clarified; learner summary added.*
