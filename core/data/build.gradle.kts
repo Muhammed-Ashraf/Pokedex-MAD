@@ -27,6 +27,8 @@ dependencies {
     // core:data will use this for caching/offline-first behavior.
     implementation(projects.core.database)
 
+    implementation(projects.core.common)
+
     // Repository implementations use coroutines/Flow.
     implementation(libs.kotlinx.coroutines.android)
 
