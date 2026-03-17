@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.android)
+    id("ashraf.pokedex.mad.android.application")
+    id("ashraf.pokedex.mad.android.application.compose")
     id("ashraf.pokedex.mad.android.hilt")
     id("ashraf.pokedex.mad.spotless")
 }
@@ -35,6 +37,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     kotlinOptions {
         jvmTarget = "17"
