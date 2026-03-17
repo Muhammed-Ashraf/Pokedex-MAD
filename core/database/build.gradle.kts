@@ -35,10 +35,6 @@ dependencies {
     // Domain models (Pokemon) live in core:model; we map to/from Room entities.
     implementation(projects.core.model)
 
-    // TODO(CoreCommon): Reference also has api(projects.core.common) here for shared JVM-only
-    // utilities (dispatchers, etc). We have not created a core:common module yet; add it and
-    // wire it in later if you decide to mirror that pattern.
-
     // Room runtime + Kotlin extensions.
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)

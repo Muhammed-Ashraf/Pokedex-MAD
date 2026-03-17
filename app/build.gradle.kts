@@ -1,7 +1,4 @@
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.kotlin.android)
     id("ashraf.pokedex.mad.android.application")
     id("ashraf.pokedex.mad.android.application.compose")
     id("ashraf.pokedex.mad.android.hilt")
@@ -10,12 +7,9 @@ plugins {
 
 android {
     namespace = "ashraf.pokedex.mad"
-    compileSdk = 36
 
     defaultConfig {
         applicationId = "ashraf.pokedex.mad"
-        minSdk = 29
-        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -31,17 +25,18 @@ android {
             )
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
+
     buildFeatures {
-        compose = true
         buildConfig = true
     }
-    kotlinOptions {
-        jvmTarget = "17"
-    }
+
+}
+
+// Compose stability analyzer plugin configuration.
+// Purpose: helps detect unstable types/parameters that can trigger extra recompositions.
+// This is a build-time analysis tool; it does not change app runtime behavior.
+composeStabilityAnalyzer {
+    enabled.set(true)
 }
 
 dependencies {
