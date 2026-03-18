@@ -1,5 +1,4 @@
-package ashraf.pokedex.mad
-
+import ashraf.pokedex.mad.configureKotlinAndroid
 import com.android.build.gradle.LibraryExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project

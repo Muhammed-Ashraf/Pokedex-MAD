@@ -2,7 +2,6 @@ package ashraf.pokedex.mad
 
 import android.app.Application
 import android.os.StrictMode
-import ashraf.pokedex.mad.core.network.BuildConfig
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp

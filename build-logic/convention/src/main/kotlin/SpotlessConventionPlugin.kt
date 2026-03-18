@@ -1,5 +1,3 @@
-package ashraf.pokedex.mad
-
 import com.diffplug.gradle.spotless.SpotlessExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project

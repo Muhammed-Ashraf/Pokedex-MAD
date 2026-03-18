@@ -18,8 +18,8 @@ plugins {
 
 android {
     namespace = "ashraf.pokedex.mad.core.network"
-    // If you use BuildConfig.DEBUG in NetworkModule for logging, uncomment:
-     buildFeatures { buildConfig = true }
+    // BuildConfig is enabled so NetworkModule can gate logging via BuildConfig.DEBUG.
+    buildFeatures { buildConfig = true }
 }
 
 dependencies {

@@ -43,17 +43,27 @@ gradlePlugin {
     plugins {
         register("androidLibrary") {
             id = "ashraf.pokedex.mad.android.library"
-            implementationClass = "ashraf.pokedex.mad.AndroidLibraryConventionPlugin"
+            implementationClass = "AndroidLibraryConventionPlugin"
         }
         // Phase 2.6: Hilt in one id — applies Hilt + KSP and adds hilt-android, hilt-navigation-compose, ksp(hilt-compiler).
         register("androidHilt") {
             id = "ashraf.pokedex.mad.android.hilt"
-            implementationClass = "ashraf.pokedex.mad.AndroidHiltConventionPlugin"
+            implementationClass = "AndroidHiltConventionPlugin"
         }
         // Phase 2.6: Spotless in one id — applies Spotless and configures ktlint + license headers for .kt, .kts, .xml.
         register("spotless") {
             id = "ashraf.pokedex.mad.spotless"
-            implementationClass = "ashraf.pokedex.mad.SpotlessConventionPlugin"
+            implementationClass = "SpotlessConventionPlugin"
+        }
+
+        register("androidApplication") {
+            id = "ashraf.pokedex.mad.android.application"
+            implementationClass = "AndroidApplicationConventionPlugin"
+        }
+
+        register("androidApplicationCompose") {
+            id = "ashraf.pokedex.mad.android.application.compose"
+            implementationClass = "AndroidApplicationComposeConventionPlugin"
         }
     }
 }
