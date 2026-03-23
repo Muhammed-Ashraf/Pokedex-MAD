@@ -395,9 +395,51 @@ Use this checklist to confirm nothing is missed compared to the reference projec
 
 ---
 
-## Phase 5: Navigation and feature modules
+## Phase 5: Design system, navigation, ViewModel, previews — then features
 
-*Steps will be added here when we start this phase.*
+**Concept:** Match the reference: **design system** (theme) → **navigation** (routes/graph) → then **ViewModels + screens** with **`@Preview`** wrapped in the same `Theme`. **DataStore is deferred** (see 5.7); list/detail data already use **Room + repositories** — DataStore is only for preferences/settings.
+
+### Recommended order (do before heavy home/detail coding)
+
+| Order | Focus | Why |
+|-------|--------|-----|
+| 1 | **Design system** | Single theme for app + all previews. |
+| 2 | **Navigation** | Stable routes before screens multiply. |
+| 3 | **ViewModel + UI** | Home (then detail) inside the graph. |
+| 4 | **Preview** | Add per composable (`Theme { … }` + fake state), not as one giant “phase.” |
+
+| Step | Task | Status |
+|------|------|--------|
+| 5.1 | **`feature:designsystem`** module (reference: `feature/designsystem`): Android library + Compose + Spotless; `Theme`, colors, typography, shapes. Optional: **Android library + Compose** convention plugin in build-logic when feature modules need the same Compose setup as app. | ⬜ |
+| 5.2 | **`app`**: `implementation(projects.feature.designsystem)`; wrap root content in design-system **`Theme { … }`**. | ⬜ |
+| 5.3 | **Navigation**: Compose Navigation or Navigation 3 (match catalog); define routes, `NavHost`, home → detail placeholder. **Reference:** home → detail flow. | ⬜ |
+| 5.4 | **Home**: `HomeViewModel` (`@HiltViewModel`, `HomeRepository`) + `HomeScreen` (list, loading, error). Use **`@Preview`** for list/empty/error states inside **`Theme`**. Either **`feature:home`** module or temporarily under `app`, then extract. | ⬜ |
+| 5.5 | **Detail**: `DetailViewModel` + screen; wire route + args; **`DetailsRepository`** + DB detail entities when ready (see core:database TODOs). | ⬜ |
+| 5.6 | **Images**: Landscapist (or Coil) in Gradle when list/detail show sprites — **Reference** uses Landscapist. | ⬜ |
+
+### 5.7 — DataStore + **settings** (and other preference UIs)
+
+**You’re right:** the roadmap did not name a **settings screen** before — DataStore is most often **read/written from a Settings screen**, but it is **not only** for that.
+
+**Do not block Phase 5.4 (home list) on DataStore.** Room + `HomeRepository` already cover list cache.
+
+| Step | Task | Status |
+|------|------|--------|
+| 5.7.1 | Add **`core:datastore`** (or equivalent): `DataStore<Preferences>` or proto DataStore; Hilt module to inject it. **Reference:** mirror their datastore module when ready. | ⬜ |
+| 5.7.2 | **Settings screen** (e.g. `feature:settings` or route under app): theme toggle, toggles, etc. **`SettingsViewModel`** reads/writes DataStore. Add route from app bar / overflow menu. | ⬜ |
+
+**Where DataStore is needed *besides* settings UI**
+
+| Use case | Needs a “settings screen”? |
+|----------|----------------------------|
+| Theme (light/dark/system) — user picks in Settings | Yes, usually |
+| Same theme pref — written once from onboarding, no settings yet | No — only onboarding flow |
+| “Don’t show onboarding again” | No — splash/onboarding only |
+| Feature flags / analytics opt-in stored on device | Sometimes Settings; sometimes one-time dialog |
+
+So: **settings screen = main place users edit prefs**; **DataStore = storage** that can also be updated from onboarding, dialogs, or first-run without a dedicated settings UI yet.
+
+**Shortcut (acceptable):** minimal home in `app` with default `MaterialTheme`, then migrate to 5.1–5.2 — but your preferred path is **design system + navigation first**, then code home.
 
 ---
 
@@ -425,6 +467,26 @@ Spotless is already applied via the **Spotless convention plugin** (Phase 2.6): 
 
 ---
 
+## Reference parity checklist (why things looked “missing”)
+
+The reference **pokedex-compose** is a **finished** repo. This roadmap was written **incrementally** as you built layers (catalog → build-logic → core → data → app conventions). That is why some reference pieces appeared “missing” until we added them (e.g. **design system** in Phase 5). Use this table so nothing important is forgotten long-term.
+
+| Area | In reference (typical) | In this project now | When to add / notes |
+|------|----------------------|---------------------|---------------------|
+| **feature:designsystem** | Theme, colors, typography | Not yet | **Phase 5.1** |
+| **feature:home** / **feature:detail** | Screens + ViewModels in feature modules | UI still in `app` | **Phase 5.4–5.5** (or start in app, then extract) |
+| **core:test** | Shared test helpers, fakes | Not yet | **Phase 6** |
+| **DetailsRepository** + detail DB entities | Caches detail JSON | List-only DB so far | **Phase 5.5** + DB TODOs |
+| **DataStore / Protobuf** | Preferences / proto | Not yet | **Phase 5.7** — prefs storage; **5.7.2 settings screen** is typical UI; onboarding can write same store without settings |
+| **Landscapist** (images) | List/detail images | Not in app Gradle yet | **Phase 5** when UI shows sprites |
+| **core:model extras** | parcelize, immutable collections, stable marker | Minimal model | Optional when you need them |
+| **Baseline profile + macrobenchmark** | `:baselineprofile`, benchmark module | Not yet | **Phase 9** |
+| **Full root `plugins { }` block** | Many `apply false` aliases | Subset + convention plugins | Expand as you add modules (test APK, baseline, etc.) |
+| **Android library + Compose convention** for features | Feature modules share Compose config | App has compose convention | **Phase 5** when you add `feature:*` modules |
+| **Spotless at root** | Sometimes applied at root | Per-module via convention | Either is valid |
+
+**Honest reason for gaps:** the assistant optimized for **one concept at a time** (network → DB → data) and did not always pre-list every reference module in the roadmap. This checklist is the **double-check** so you can track parity without redoing work.
+
 ---
 
 ### Phase 4 — Path we followed (summary for learners)
@@ -442,4 +504,4 @@ Spotless is already applied via the **Spotless convention plugin** (Phase 2.6): 
 
 ---
 
-*Last updated: Phase 4 order and steps aligned with actual path; 4.3/4.4/4.5 clarified; learner summary added.*
+*Last updated: Phase 5.7 — DataStore + settings screen; clarified DataStore use beyond settings.*
