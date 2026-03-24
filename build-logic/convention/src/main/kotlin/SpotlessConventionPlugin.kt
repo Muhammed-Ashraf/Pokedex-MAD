@@ -54,7 +54,10 @@ class SpotlessConventionPlugin : Plugin<Project> {
                     target("**/*.kts")
                     targetExclude(buildDirectory)
                     // Regex: where to insert the license (before first line that isn't a comment).
-                    licenseHeaderFile(rootProject.file("spotless/spotless.license.kt"), "(^(?![\\/ ]\\*).*$)")
+                    licenseHeaderFile(
+                        rootProject.file("spotless/spotless.license.kt"),
+                        "(^(?![\\/ ]\\*).*$)"
+                    )
                 }
 
                 // ---- XML (manifests, layouts, etc.) ----

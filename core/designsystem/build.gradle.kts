@@ -9,8 +9,18 @@ android {
 }
 
 dependencies {
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.compose.ui.tooling.preview)
+
+//todo    // image loading
+//    api(libs.landscapist.image)
+//    api(libs.landscapist.animation)
+//    api(libs.landscapist.placeholder)
+//    api(libs.landscapist.palette)
+//
+//  todo  // splash screen
+//    api(libs.androidx.core.splashscreen)
+
+    api(platform(libs.androidx.compose.bom))
+    api(libs.androidx.compose.ui)
+    api(libs.androidx.compose.material3)
+    api(libs.androidx.compose.ui.tooling.preview)
 }
