@@ -16,7 +16,9 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    buildTypes {
+    //todo signingconfig
+
+    buildTypes { //todo
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -30,6 +32,30 @@ android {
         buildConfig = true
     }
 
+    // Hilt build optimization (reference-aligned).
+// Purpose:
+// - Enables Hilt's aggregating task mode, which can improve incremental build behavior
+//   and reduce unnecessary annotation processing work in multi-module projects.
+// - Build-time only setting; no runtime behavior change.
+    hilt {
+        enableAggregatingTask = true
+    }
+
+    //todo testoption
+
+}
+
+kotlin {
+    compilerOptions {
+        // Reference-aligned compiler flags:
+        // disable selected Kotlin runtime assertions to reduce generated checks.
+        // Tradeoff: fewer runtime guardrails during debugging.
+        freeCompilerArgs.addAll(
+            "-Xno-param-assertions",
+            "-Xno-call-assertions",
+            "-Xno-receiver-assertions",
+        )
+    }
 }
 
 // Compose stability analyzer plugin configuration.
@@ -40,14 +66,8 @@ composeStabilityAnalyzer {
 }
 
 dependencies {
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.graphics)
-    implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.compose.material3)
+
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -58,8 +78,9 @@ dependencies {
 
 
     // cores
-    implementation(projects.core.model)
+    implementation(projects.core.model) //todo check last whether model is needed
     implementation(projects.core.data)
     implementation(projects.core.designsystem)
+    implementation(projects.core.navigation)
 
 }
