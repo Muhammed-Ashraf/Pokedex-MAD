@@ -12,14 +12,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import ashraf.pokedex.mad.core.model.Pokemon
-import ashraf.pokedex.mad.ui.theme.PokedexMADTheme
+import ashraf.pokedex.mad.core.designsystem.theme.PokedexTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            PokedexMADTheme {
+            PokedexTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     // Step 3.5: Sample Pokemon from core:model to verify the dependency.
                     val samplePokemon = Pokemon(
@@ -48,7 +48,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Preview(showBackground = true, apiLevel = 34)
 @Composable
 fun GreetingPreview() {
-    PokedexMADTheme {
+    PokedexTheme {
         val samplePokemon = Pokemon(
             page = 0,
             nameField = "bulbasaur",

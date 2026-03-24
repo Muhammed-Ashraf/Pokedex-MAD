@@ -22,8 +22,7 @@ class AndroidLibraryComposeConventionPlugin : Plugin<Project> {
             // Ensure the library plugin is applied (defensive).
             pluginManager.apply("com.android.library")
 
-            // Apply Kotlin Compose plugin (same id used by your catalog: org.jetbrains.kotlin.plugin.compose).
-            pluginManager.apply("org.jetbrains.kotlin.plugin.compose")
+            pluginManager.apply("com.github.skydoves.compose.stability.analyzer")
 
             val extension = extensions.getByType<com.android.build.gradle.LibraryExtension>()
             configureAndroidCompose(extension)
