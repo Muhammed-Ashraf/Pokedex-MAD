@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import ashraf.pokedex.mad.core.model.Pokemon
 import ashraf.pokedex.mad.core.designsystem.theme.PokedexTheme
 import ashraf.pokedex.mad.ui.PokedexMain
@@ -19,7 +20,7 @@ import ashraf.pokedex.mad.ui.PokedexMain
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //todo splash screen
+        val splashScreen = installSplashScreen()
         enableEdgeToEdge()
         setContent {
             PokedexMain(

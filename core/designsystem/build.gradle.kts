@@ -16,8 +16,8 @@ dependencies {
 //    api(libs.landscapist.placeholder)
 //    api(libs.landscapist.palette)
 //
-//  todo  // splash screen
-//    api(libs.androidx.core.splashscreen)
+
+    api(libs.androidx.core.splashscreen)
 
     api(platform(libs.androidx.compose.bom))
     api(libs.androidx.compose.ui)
