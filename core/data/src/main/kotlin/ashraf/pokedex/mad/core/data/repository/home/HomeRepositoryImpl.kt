@@ -45,7 +45,7 @@ class HomeRepositoryImpl @Inject constructor(
         onStart: () -> Unit,
         onComplete: () -> Unit,
         onLastPageReached: () -> Unit,
-        onError: (String) -> Unit,
+        onError: (String?) -> Unit,
     ): Flow<List<Pokemon>> = flow {
         // Try to load this page from DB first.
         var pokemons: List<Pokemon> = pokemonDao.getPokemonList(page).asDomain()
