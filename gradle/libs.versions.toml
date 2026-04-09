@@ -36,6 +36,8 @@ mockito = "5.11.0"
 mockito-kotlin = "6.1.0"
 androidxTest = "1.6.1"
 
+kotlinxImmutable = "0.4.0"
+
 [libraries]
 #default when creating project
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -83,6 +85,8 @@ androidx-navigation3-ui = { group = "androidx.navigation3", name = "navigation3-
 # Phase 2.6: Hilt + Navigation Compose (hiltViewModel(), etc.); added by android.hilt convention plugin.
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidxHiltNavigationCompose" }
 
+
+kotlinx-immutable-collection = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "kotlinxImmutable" }
 #Unit Test
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
@@ -99,6 +103,11 @@ spotless-gradlePlugin = { group = "com.diffplug.spotless", name = "spotless-plug
 
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-lifecycle-viewModelCompose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "androidxLifecycle" }
+
+androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime"}
+androidx-compose-animation = { group = "androidx.compose.animation", name = "animation" }
+androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation"}
+androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout" }
 [plugins]
 #default when creating project
 android-application = { id = "com.android.application", version.ref = "agp" }
