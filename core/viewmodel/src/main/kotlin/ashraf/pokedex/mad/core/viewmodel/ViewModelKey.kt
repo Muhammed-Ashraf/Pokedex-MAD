@@ -1,4 +1,4 @@
-package ashraf.pokedx.mad.core.viewmodel
+package ashraf.pokedex.mad.core.viewmodel
 
 /**
  * Key used to distinguish state flows for different ViewModel types.

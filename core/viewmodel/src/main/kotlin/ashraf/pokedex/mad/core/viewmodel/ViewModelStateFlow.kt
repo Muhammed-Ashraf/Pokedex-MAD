@@ -1,4 +1,4 @@
-package ashraf.pokedx.mad.core.viewmodel
+package ashraf.pokedex.mad.core.viewmodel
 
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
