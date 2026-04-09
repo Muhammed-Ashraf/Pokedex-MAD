@@ -1,4 +1,4 @@
-package ashraf.pokedx.mad.core.viewmodel
+package ashraf.pokedex.mad.core.viewmodel
 
 import androidx.lifecycle.ViewModel
 

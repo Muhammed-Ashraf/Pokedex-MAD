@@ -70,6 +70,11 @@ gradlePlugin {
             id = "ashraf.pokedex.mad.android.library.compose"
             implementationClass = "AndroidLibraryComposeConventionPlugin"
         }
+
+        register("androidFeature") {
+            id = "ashraf.pokedex.mad.android.feature"
+            implementationClass = "AndroidFeatureConventionPlugin"
+        }
     }
 }
 
