@@ -17,7 +17,10 @@ android {
 
 dependencies {
     // Domain models shared across layers (Pokemon, etc.)
-    implementation(projects.core.model)
+    api(projects.core.model)
+
+    // kotlinx
+    api(libs.kotlinx.immutable.collection)
 
     // Network layer (Retrofit + service + Sandwich wrappers).
     // core:data will call this and map results into domain models.
