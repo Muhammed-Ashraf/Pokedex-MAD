@@ -12,6 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ashraf.pokedex.mad.core.data.repository.home.FakeHomeRepository
+import ashraf.pokedex.mad.core.designsystem.component.PokedexAppBar
 import ashraf.pokedex.mad.core.model.Pokemon
 import ashraf.pokedex.mad.core.navigation.currentComposeNavigator
 import ashraf.pokedex.mad.core.preview.PokedexPreviewTheme
@@ -45,7 +46,20 @@ fun PokedexHome(
 
     val composeNavigator = currentComposeNavigator
 
-    Column(modifier = Modifier.fillMaxSize()) { }
+    Column(modifier = Modifier.fillMaxSize()) {
+        PokedexAppBar {
+            //todo later
+        }
+        HomeContent(
+            sharedTransitionScope = sharedTransitionScope,
+            animatedContentScope = animatedContentScope,
+            uiState = uiState,
+            pokemonList = pokemonList.toImmutableList(),
+            fetchNextPokemonList = homeViewModel::fetchNextPokemonList,
+            navigateToDetails = { //todo
+            }
+        )
+    }
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -65,7 +79,7 @@ private fun HomeContent(
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun PokedexHomePreview() {
+private fun PokedexHomePreview() {
     PokedexPreviewTheme { animatedContentScope ->
         PokedexHome(
             sharedTransitionScope = this@PokedexPreviewTheme,
@@ -79,7 +93,7 @@ fun PokedexHomePreview() {
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun HomeContentPreview() {
+private fun HomeContentPreview() {
     PokedexPreviewTheme { animatedContentScope ->
         HomeContent(
             sharedTransitionScope = this@PokedexPreviewTheme,
