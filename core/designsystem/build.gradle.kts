@@ -10,11 +10,11 @@ android {
 
 dependencies {
 
-//todo    // image loading
-//    api(libs.landscapist.image)
-//    api(libs.landscapist.animation)
-//    api(libs.landscapist.placeholder)
-//    api(libs.landscapist.palette)
+
+    api(libs.landscapist.image)
+    api(libs.landscapist.animation)
+    api(libs.landscapist.placeholder)
+    api(libs.landscapist.palette)
 //
 
     api(libs.androidx.core.splashscreen)
