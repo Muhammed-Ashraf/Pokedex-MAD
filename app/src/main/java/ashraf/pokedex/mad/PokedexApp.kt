@@ -23,7 +23,7 @@ class PokedexApp : Application(){
                 StrictMode.VmPolicy.Builder()
                     .detectAll()
                     .penaltyLog()
-                    .penaltyDeath()
+                 //   .penaltyDeath()
                     .build()
             )
         }

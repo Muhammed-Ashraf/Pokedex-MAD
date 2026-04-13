@@ -16,15 +16,20 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import ashraf.pokedex.mad.core.model.Pokemon
 import ashraf.pokedex.mad.core.designsystem.theme.PokedexTheme
 import ashraf.pokedex.mad.ui.PokedexMain
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         val splashScreen = installSplashScreen()
         enableEdgeToEdge()
+        super.onCreate(savedInstanceState)
+
+//todo add MainActivityViewModel
+
         setContent {
             PokedexMain(
-                darkTheme = true //todo refer later
+                darkTheme = false //todo refer later
             )
         }
     }

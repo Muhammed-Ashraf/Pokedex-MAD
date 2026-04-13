@@ -67,6 +67,8 @@ composeStabilityAnalyzer {
 
 dependencies {
 
+    // features
+    implementation(projects.feature.home)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
