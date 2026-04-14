@@ -1,14 +1,17 @@
-
 package ashraf.pokedex.mad.core.database.di
 
 import android.app.Application
 import androidx.room.Room
 import ashraf.pokedex.mad.core.database.PokedexDatabase
 import ashraf.pokedex.mad.core.database.PokemonDao
+import ashraf.pokedex.mad.core.database.PokemonInfoDao
+import ashraf.pokedex.mad.core.database.StatsResponseConverter
+import ashraf.pokedex.mad.core.database.TypeResponseConverter
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.serialization.json.Json
 import javax.inject.Singleton
 
 /**
@@ -34,6 +37,8 @@ object DatabaseModule {
     @Singleton
     fun providePokedexDatabase(
         application: Application,
+        typeResponseConverter: TypeResponseConverter,
+        statsResponseConverter: StatsResponseConverter,
     ): PokedexDatabase =
         Room.databaseBuilder(
             application,
@@ -41,6 +46,8 @@ object DatabaseModule {
             "Pokedex.db",
         )
             .fallbackToDestructiveMigration()
+            .addTypeConverter(typeResponseConverter)
+            .addTypeConverter(statsResponseConverter)
             .build()
 
     /**
@@ -54,4 +61,22 @@ object DatabaseModule {
     fun providePokemonDao(
         database: PokedexDatabase,
     ): PokemonDao = database.pokemonDao()
+
+    @Provides
+    @Singleton
+    fun providePokemonInfoDao(appDatabase: PokedexDatabase): PokemonInfoDao {
+        return appDatabase.pokemonInfoDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideTypeResponseConverter(json: Json): TypeResponseConverter {
+        return TypeResponseConverter(json)
+    }
+
+    @Provides
+    @Singleton
+    fun provideStatsResponseConverter(json: Json): StatsResponseConverter {
+        return StatsResponseConverter(json)
+    }
 }

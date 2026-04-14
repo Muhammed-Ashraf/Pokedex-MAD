@@ -27,6 +27,12 @@ android {
 
 // Only what this module needs. No Room, Retrofit, Compose, or Hilt — model is pure data.
 dependencies {
+    // compose stable marker
+    compileOnly(libs.compose.stable.marker)
+
     // Kotlin Serialization JSON: runtime for @Serializable and Json.encode/decode.
     implementation(libs.kotlinx.serialization.json)
+
+//    // kotlinx
+//    api(libs.kotlinx.immutable.collection)
 }
