@@ -49,16 +49,30 @@ internal fun Project.configureKotlinAndroid(
 ) {
     extension.apply {
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_17)
+
+            // Treat all Kotlin warnings as errors (disabled by default)
+            allWarningsAsErrors.set(
+                properties["warningsAsErrors"] as? Boolean ?: false
+            )
 
             freeCompilerArgs.set(
                 freeCompilerArgs.getOrElse(emptyList()) + listOf(
+//                    // Enables advanced Kotlin language/compiler features used by this codebase.
+//                    "-Xexplicit-backing-fields",
+//                    "-Xcontext-receivers",
+
+                    // Global opt-ins so modules can use selected experimental APIs
+                    // without repeating local @OptIn annotations in many files.
                     "-Xopt-in=kotlin.RequiresOptIn",
                     "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
                     "-Xopt-in=androidx.compose.material3.ExperimentalMaterial3Api",
                     "-Xopt-in=androidx.lifecycle.compose.ExperimentalLifecycleComposeApi",
+                    "-Xopt-in=androidx.compose.animation.ExperimentalSharedTransitionApi",
                 ),
             )
+
+            jvmTarget.set(JvmTarget.JVM_17)
+
         }
     }
 }

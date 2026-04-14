@@ -1,5 +1,6 @@
 package ashraf.pokedex.mad.navigation
 
+import PokedexHome
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.material3.Text
@@ -16,6 +17,7 @@ import androidx.navigation3.ui.NavDisplay
 import ashraf.pokedex.mad.core.navigation.LocalComposeNavigator
 import ashraf.pokedex.mad.core.navigation.PokedexNavigatorImpl
 import ashraf.pokedex.mad.core.navigation.PokedexScreen
+import com.skydoves.compose.stability.runtime.TraceRecomposition
 
 /**
  * App-level navigation host (reference-style).
@@ -23,13 +25,10 @@ import ashraf.pokedex.mad.core.navigation.PokedexScreen
  * Why this lives in app (not core:navigation):
  * - This file wires *feature screens* together (home/details/settings).
  * - core:navigation keeps only reusable contracts (PokedexScreen, Navigator, locals).
- *
- * Current status:
- * - Uses placeholders for each destination until feature modules are implemented.
- * - Keeps the same structure as reference so swapping placeholders with real screens is easy.
  */
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
+@TraceRecomposition
 fun PokedexNavHost() {
     /**
      * Navigation3 back stack.
@@ -57,7 +56,7 @@ fun PokedexNavHost() {
         LocalComposeNavigator provides navigator,
     ) {
         /**
-         * SharedTransitionLayout is kept now to match reference architecture.
+         * SharedTransitionLayout is kept now.
          * Even if we are not doing advanced transitions yet, keeping this wrapper now
          * avoids structure changes later.
          */
@@ -90,10 +89,9 @@ fun PokedexNavHost() {
                  */
                 entryProvider = entryProvider<NavKey> {
                     entry<PokedexScreen.Home> {
-                        // TODO(Phase 5.4): Replace with PokedexHome(...) from feature:home.
-                        // LocalNavAnimatedContentScope is imported to match reference usage.
-                        val _animatedScope = LocalNavAnimatedContentScope.current
-                        Text(text = "Home (placeholder)")
+                        PokedexHome(sharedTransitionScope = this@SharedTransitionLayout,
+                            animatedContentScope = LocalNavAnimatedContentScope.current,
+                        )
                     }
 
                     entry<PokedexScreen.Details> { screen ->
