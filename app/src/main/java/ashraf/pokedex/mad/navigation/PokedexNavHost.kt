@@ -1,6 +1,5 @@
 package ashraf.pokedex.mad.navigation
 
-import PokedexHome
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.material3.Text
@@ -17,6 +16,7 @@ import androidx.navigation3.ui.NavDisplay
 import ashraf.pokedex.mad.core.navigation.LocalComposeNavigator
 import ashraf.pokedex.mad.core.navigation.PokedexNavigatorImpl
 import ashraf.pokedex.mad.core.navigation.PokedexScreen
+import ashraf.pokedex.mad.feature.home.PokedexHome
 import com.skydoves.compose.stability.runtime.TraceRecomposition
 
 /**
@@ -89,7 +89,8 @@ fun PokedexNavHost() {
                  */
                 entryProvider = entryProvider<NavKey> {
                     entry<PokedexScreen.Home> {
-                        PokedexHome(sharedTransitionScope = this@SharedTransitionLayout,
+                        PokedexHome(
+                            sharedTransitionScope = this@SharedTransitionLayout,
                             animatedContentScope = LocalNavAnimatedContentScope.current,
                         )
                     }
