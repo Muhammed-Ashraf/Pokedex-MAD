@@ -1,5 +1,7 @@
 package ashraf.pokedex.mad.core.data.di
 
+import ashraf.pokedex.mad.core.data.repository.details.DetailsRepository
+import ashraf.pokedex.mad.core.data.repository.details.DetailsRepositoryImpl
 import ashraf.pokedex.mad.core.data.repository.home.HomeRepository
 import ashraf.pokedex.mad.core.data.repository.home.HomeRepositoryImpl
 import dagger.Binds
@@ -10,11 +12,12 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-internal abstract class DataModule {
+internal interface DataModule {
+    @Binds
+    @Singleton
+    fun bindHomeRepository(impl: HomeRepositoryImpl): HomeRepository
 
     @Binds
     @Singleton
-    abstract fun bindHomeRepository(
-        impl: HomeRepositoryImpl,
-    ): HomeRepository
+    fun bindDetailsRepository(impl: DetailsRepositoryImpl): DetailsRepository
 }

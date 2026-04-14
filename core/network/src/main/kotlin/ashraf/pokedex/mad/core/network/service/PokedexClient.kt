@@ -16,6 +16,7 @@
 
 package ashraf.pokedex.mad.core.network.service
 
+import ashraf.pokedex.mad.core.model.PokemonInfo
 import ashraf.pokedex.mad.core.network.model.PokemonResponse
 import com.skydoves.sandwich.ApiResponse
 import javax.inject.Inject
@@ -33,33 +34,36 @@ import javax.inject.Inject
  * in core:data (e.g. HomeRepositoryImpl) instead of injecting [PokedexService] directly.
  */
 class PokedexClient @Inject constructor(
-  // Retrofit interface that actually defines the HTTP calls.
-  private val pokedexService: PokedexService,
+    // Retrofit interface that actually defines the HTTP calls.
+    private val pokedexService: PokedexService,
 ) {
 
-  /**
-   * Fetches one "page" of Pokemon from the API.
-   *
-   * Inputs:
-   * - [page]: a zero-based page index (0, 1, 2, ...).
-   *
-   * How it works:
-   * - Converts page into (limit, offset) pair understood by the PokeAPI:
-   *     limit  = PAGING_SIZE (fixed page size)
-   *     offset = page * PAGING_SIZE
-   * - Delegates the actual HTTP call to [pokedexService].
-   * - Returns an [ApiResponse] so the caller can use Sandwich operators
-   *   (suspendOnSuccess / suspendOnError) for consistent error handling.
-   */
-  suspend fun fetchPokemonList(page: Int): ApiResponse<PokemonResponse> =
-    pokedexService.fetchPokemonList(
-      limit = PAGING_SIZE,
-      offset = page * PAGING_SIZE,
-    )
+    /**
+     * Fetches one "page" of Pokemon from the API.
+     *
+     * Inputs:
+     * - [page]: a zero-based page index (0, 1, 2, ...).
+     *
+     * How it works:
+     * - Converts page into (limit, offset) pair understood by the PokeAPI:
+     *     limit  = PAGING_SIZE (fixed page size)
+     *     offset = page * PAGING_SIZE
+     * - Delegates the actual HTTP call to [pokedexService].
+     * - Returns an [ApiResponse] so the caller can use Sandwich operators
+     *   (suspendOnSuccess / suspendOnError) for consistent error handling.
+     */
+    suspend fun fetchPokemonList(page: Int): ApiResponse<PokemonResponse> =
+        pokedexService.fetchPokemonList(
+            limit = PAGING_SIZE,
+            offset = page * PAGING_SIZE,
+        )
 
-  companion object {    
-    // Number of items per "page" when requesting the Pokemon list.
-    // Kept here so both client and repositories share the same paging size.
-    private const val PAGING_SIZE = 20
-  }
+    suspend fun fetchPokemonInfo(name: String): ApiResponse<PokemonInfo> =
+        pokedexService.fetchPokemonInfo(name)
+
+    companion object {
+        // Number of items per "page" when requesting the Pokemon list.
+        // Kept here so both client and repositories share the same paging size.
+        private const val PAGING_SIZE = 20
+    }
 }
