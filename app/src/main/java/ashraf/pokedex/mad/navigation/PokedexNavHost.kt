@@ -16,6 +16,7 @@ import androidx.navigation3.ui.NavDisplay
 import ashraf.pokedex.mad.core.navigation.LocalComposeNavigator
 import ashraf.pokedex.mad.core.navigation.PokedexNavigatorImpl
 import ashraf.pokedex.mad.core.navigation.PokedexScreen
+import ashraf.pokedex.mad.feature.details.PokedexDetails
 import ashraf.pokedex.mad.feature.home.PokedexHome
 import com.skydoves.compose.stability.runtime.TraceRecomposition
 
@@ -95,11 +96,15 @@ fun PokedexNavHost() {
                         )
                     }
 
+
                     entry<PokedexScreen.Details> { screen ->
-                        // TODO(Phase 5.5): Replace with PokedexDetails(...) from feature:details.
-                        val _animatedScope = LocalNavAnimatedContentScope.current
-                        Text(text = "Details (placeholder): ${screen.pokemon.name}")
+                        PokedexDetails(
+                            sharedTransitionScope = this@SharedTransitionLayout,
+                            animatedContentScope = LocalNavAnimatedContentScope.current,
+                            pokemon = screen.pokemon
+                        )
                     }
+
 
                     entry<PokedexScreen.Settings>(
                         // Render settings as a dialog scene (reference style).

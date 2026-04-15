@@ -41,6 +41,7 @@ import ashraf.pokedex.mad.core.designsystem.component.PokedexAppBar
 import ashraf.pokedex.mad.core.designsystem.component.PokedexCircularProgress
 import ashraf.pokedex.mad.core.designsystem.theme.PokedexTheme
 import ashraf.pokedex.mad.core.model.Pokemon
+import ashraf.pokedex.mad.core.navigation.PokedexScreen
 import ashraf.pokedex.mad.core.navigation.currentComposeNavigator
 import ashraf.pokedex.mad.core.preview.PokedexPreviewTheme
 import ashraf.pokedex.mad.core.preview.PreviewUtils
@@ -87,7 +88,8 @@ fun PokedexHome(
             uiState = uiState,
             pokemonList = pokemonList.toImmutableList(),
             fetchNextPokemonList = homeViewModel::fetchNextPokemonList,
-            navigateToDetails = { //todo
+            navigateToDetails = {
+                composeNavigator.navigate(PokedexScreen.Details(pokemon = it))
             }
         )
     }
@@ -125,7 +127,7 @@ private fun HomeContent(
                     onPaletteLoaded = { palette = it },
                     backgroundColor = backgroundColor,
                     pokemon = pokemon,
-                    onCardClick = {navigateToDetails(pokemon)}
+                    onCardClick = { navigateToDetails(pokemon) }
 
                 )
             }
