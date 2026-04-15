@@ -1,3 +1,5 @@
+package ashraf.pokedex.mad.feature.home
+
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -36,14 +38,12 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ashraf.pokedex.mad.core.data.repository.home.FakeHomeRepository
 import ashraf.pokedex.mad.core.designsystem.component.PokedexAppBar
+import ashraf.pokedex.mad.core.designsystem.component.PokedexCircularProgress
 import ashraf.pokedex.mad.core.designsystem.theme.PokedexTheme
 import ashraf.pokedex.mad.core.model.Pokemon
 import ashraf.pokedex.mad.core.navigation.currentComposeNavigator
 import ashraf.pokedex.mad.core.preview.PokedexPreviewTheme
 import ashraf.pokedex.mad.core.preview.PreviewUtils
-import ashraf.pokedex.mad.feature.home.HomeUiState
-import ashraf.pokedex.mad.feature.home.HomeViewModel
-import ashraf.pokedex.mad.feature.home.paletteBackgroundColor
 import com.kmpalette.palette.graphics.Palette
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.components.rememberImageComponent
@@ -53,7 +53,7 @@ import com.skydoves.landscapist.palette.rememberPaletteState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
-/**
+/*
  * What this does:
  * - Entry composable for Home feature.
  * - Collects ViewModel state and forwards data/actions to UI content.
@@ -130,6 +130,9 @@ private fun HomeContent(
                 )
             }
 
+        }
+        if (uiState == HomeUiState.Loading) {
+            PokedexCircularProgress()
         }
     }
 }

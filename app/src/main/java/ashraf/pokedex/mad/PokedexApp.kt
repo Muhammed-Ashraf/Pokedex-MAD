@@ -14,7 +14,7 @@ class PokedexApp : Application(){
                 StrictMode.ThreadPolicy.Builder()
                     .detectAll()
                     .penaltyLog()
-                    .penaltyFlashScreen()
+                 //   .penaltyFlashScreen()
                    // .penaltyDialog()
                     //.penaltyDeath() // only if you want hard crashes
                     .build()

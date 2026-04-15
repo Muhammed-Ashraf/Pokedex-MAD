@@ -40,6 +40,8 @@ kotlinxImmutable = "0.4.0"
 
 landscapist = "2.8.0"
 
+composeStableMarker = "1.0.7"
+
 [libraries]
 #default when creating project
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -92,6 +94,8 @@ landscapist-image = { group = "com.github.skydoves", name = "landscapist-image",
 landscapist-animation = { group = "com.github.skydoves", name = "landscapist-animation", version.ref = "landscapist" }
 landscapist-placeholder = { group = "com.github.skydoves", name = "landscapist-placeholder", version.ref = "landscapist" }
 landscapist-palette = { group = "com.github.skydoves", name = "landscapist-palette", version.ref = "landscapist" }
+
+compose-stable-marker = { group = "com.github.skydoves", name = "compose-stable-marker", version.ref = "composeStableMarker" }
 
 #Unit Test
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }

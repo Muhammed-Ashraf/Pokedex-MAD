@@ -2,7 +2,9 @@ package ashraf.pokedex.mad.core.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import ashraf.pokedex.mad.core.database.entity.PokemonEntity
+import ashraf.pokedex.mad.core.database.entity.PokemonInfoEntity
 
 /**
  * RoomDatabase = the main entry point to your Room DB.
@@ -21,15 +23,14 @@ import ashraf.pokedex.mad.core.database.entity.PokemonEntity
  * - This helps with migrations later (and mirrors reference project).
  */
 @Database(
-    entities = [PokemonEntity::class],
-    version = 1,
+    entities = [PokemonEntity::class, PokemonInfoEntity::class],
+    version = 2,
     exportSchema = true,
 )
+
+@TypeConverters(value = [TypeResponseConverter::class, StatsResponseConverter::class])
 abstract class PokedexDatabase : RoomDatabase() {
 
-    /**
-     * Room generates the implementation for this at build time.
-     * You never implement this yourself.
-     */
     abstract fun pokemonDao(): PokemonDao
+    abstract fun pokemonInfoDao(): PokemonInfoDao
 }

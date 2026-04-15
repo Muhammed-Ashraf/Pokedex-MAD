@@ -1,5 +1,6 @@
 package ashraf.pokedex.mad.core.data.repository.home
 
+import androidx.annotation.VisibleForTesting
 import androidx.annotation.WorkerThread
 import ashraf.pokedex.mad.core.common.network.Dispatcher
 import ashraf.pokedex.mad.core.common.network.PokedexAppDispatchers
@@ -32,6 +33,7 @@ import javax.inject.Inject
  *   2) If empty, call network and save to DB.
  *   3) Emit the data from DB as the single source of truth.
  */
+@VisibleForTesting
 class HomeRepositoryImpl @Inject constructor(
     private val pokedexClient: PokedexClient,
     private val pokemonDao: PokemonDao,

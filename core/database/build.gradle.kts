@@ -43,6 +43,9 @@ dependencies {
     // Coroutines for suspend DAO methods.
     implementation(libs.kotlinx.coroutines.android)
 
+    // json parsing
+    implementation(libs.kotlinx.serialization.json)
+
     // TODO(Phase6-Tests): Add core:test and Room/coroutines test deps when we start writing DB tests,
     // mirroring the reference core:database module:
     //  - testImplementation(projects.core.test)

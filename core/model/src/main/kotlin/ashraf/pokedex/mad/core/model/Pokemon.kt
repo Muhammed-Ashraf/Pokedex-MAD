@@ -1,5 +1,6 @@
 package ashraf.pokedex.mad.core.model
 
+import androidx.compose.runtime.Immutable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -19,6 +20,7 @@ import kotlinx.serialization.Serializable
  * @Serializable — Lets kotlinx.serialization encode/decode this class to JSON
  * (for Retrofit and for saving to disk). The compiler generates the serializer.
  */
+@Immutable
 @Serializable
 data class Pokemon(
     /** 0-based page index when loading paginated list; not from API, we set it when building the list. */
