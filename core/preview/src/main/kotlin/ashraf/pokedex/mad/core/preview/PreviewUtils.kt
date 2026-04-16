@@ -1,6 +1,7 @@
 package ashraf.pokedex.mad.core.preview
 
 import ashraf.pokedex.mad.core.model.Pokemon
+import ashraf.pokedex.mad.core.model.PokemonInfo
 
 /**
  * Static fake data for **@Preview** composables.
@@ -23,7 +24,26 @@ object PreviewUtils {
     fun mockPokemonList(): List<Pokemon> = List(10) { index ->
         Pokemon(page = 0, nameField = "bulbasaur$index", url = "")
     }
-//TODO later
-    // When you add `PokemonInfo` to core:model (detail screen / API shape), mirror the reference:
-    // fun mockPokemonInfo(): PokemonInfo = PokemonInfo(...)
+
+    fun mockPokemonInfo() = PokemonInfo(
+        id = 1,
+        name = "bulbasaur",
+        height = 7,
+        weight = 69,
+        experience = 60,
+        types = listOf(
+            PokemonInfo.TypeResponse(slot = 0, type = PokemonInfo.Type("grass")),
+            PokemonInfo.TypeResponse(slot = 0, type = PokemonInfo.Type("poison")),
+        ),
+        stats = listOf(
+            PokemonInfo.StatsResponse(baseStat = 20, effort = 0, stat = PokemonInfo.Stat("hp")),
+            PokemonInfo.StatsResponse(baseStat = 40, effort = 0, stat = PokemonInfo.Stat("attack")),
+            PokemonInfo.StatsResponse(
+                baseStat = 60,
+                effort = 0,
+                stat = PokemonInfo.Stat("defense")
+            ),
+            PokemonInfo.StatsResponse(baseStat = 80, effort = 0, stat = PokemonInfo.Stat("attack")),
+        ),
+    )
 }
