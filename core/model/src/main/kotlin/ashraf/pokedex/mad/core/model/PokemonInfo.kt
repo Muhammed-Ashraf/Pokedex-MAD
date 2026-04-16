@@ -36,7 +36,7 @@ data class PokemonInfo(
     fun getWeightString(): String = String.format("%.1f KG", weight.toFloat() / 10)
     fun getHeightString(): String = String.format("%.1f M", height.toFloat() / 10)
     fun getHpString(): String = " $hp/${MAX_HP}"
-    fun getAttackString(): String = " $attack/$MAX_ATTACK}"
+    fun getAttackString(): String = " $attack/$MAX_ATTACK"
     fun getDefenseString(): String = " $defense/${MAX_DEFENSE}"
     fun getSpeedString(): String = " $speed/${MAX_SPEED}"
     fun getExpString(): String = " $exp/${MAX_EXP}"
