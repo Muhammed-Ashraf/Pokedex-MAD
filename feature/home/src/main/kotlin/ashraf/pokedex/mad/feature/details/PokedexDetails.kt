@@ -6,6 +6,7 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,6 +32,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,8 +42,10 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ashraf.pokedex.mad.core.data.repository.details.FakeDetailsRepository
 import ashraf.pokedex.mad.core.designsystem.R
+import ashraf.pokedex.mad.core.designsystem.component.PokedexCircularProgress
 import ashraf.pokedex.mad.core.designsystem.component.PokedexText
 import ashraf.pokedex.mad.core.designsystem.theme.PokedexTheme
+import ashraf.pokedex.mad.core.designsystem.utils.getPokemonTypeColor
 import ashraf.pokedex.mad.core.model.Pokemon
 import ashraf.pokedex.mad.core.model.PokemonInfo
 import ashraf.pokedex.mad.core.navigation.currentComposeNavigator
@@ -118,6 +122,16 @@ fun PokedexDetails(
                 onPaletteLoaded = { palette = it },
                 backgroundBrush = backgroundBrush
             )
+
+            if (uiState != DetailsUiState.Idle && pokemonInfo != null) {
+                DetailsInfo(pokemonInfo!!)
+
+                DetailsStatus(pokemonInfo!!)
+            } else {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    PokedexCircularProgress()
+                }
+            }
         }
     }
 }
@@ -212,6 +226,73 @@ private fun DetailsHeader(
     )
 }
 
+@Composable
+private fun DetailsInfo(pokemonInfo: PokemonInfo) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 14.dp),
+        horizontalArrangement = Arrangement.spacedBy(22.dp, Alignment.CenterHorizontally)
+    ) {
+        pokemonInfo.types.forEach { typeInfo ->
+            Text(
+                modifier = Modifier
+                    .background(
+                        color = getPokemonTypeColor(typeInfo.type.name),
+                        shape = RoundedCornerShape(64.dp)
+                    )
+                    .padding(vertical = 4.dp, horizontal = 40.dp),
+                text = typeInfo.type.name,
+                fontWeight = FontWeight.Bold,
+                color = PokedexTheme.colors.absoluteWhite,
+                fontSize = 16.sp,
+                textAlign = TextAlign.Center,
+                maxLines = 1
+            )
+        }
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 24.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+    ) {
+        PokemonInfoItem(
+            title = pokemonInfo.getWeightString(),
+            content = stringResource(id = R.string.weight),
+        )
+
+        PokemonInfoItem(
+            title = pokemonInfo.getHeightString(),
+            content = stringResource(id = R.string.height),
+        )
+    }
+}
+
+@Composable
+fun DetailsStatus(pokemonInfo: PokemonInfo) {
+    Text(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 22.dp, bottom = 16.dp),
+        text = stringResource(R.string.base_stats),
+        textAlign = TextAlign.Center,
+        fontWeight = FontWeight.Bold,
+        color = PokedexTheme.colors.black,
+        fontSize = 21.sp
+    )
+
+    Column {
+        pokemonInfo.toPokedexStatusList().forEach { pokemonStatus ->
+            PokemonStatusItem(
+                modifier = Modifier.padding(bottom = 12.dp),
+                pokedexStatus = pokemonStatus,
+            )
+        }
+    }
+}
+
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
@@ -228,5 +309,23 @@ private fun PokedexDetailsPreview() {
                 detailsRepository = FakeDetailsRepository(),
             ),
         )
+    }
+}
+
+@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun PokedexDetailsInfoPreview() {
+    PokedexTheme {
+        DetailsInfo(pokemonInfo = PreviewUtils.mockPokemonInfo())
+    }
+}
+
+@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun PokedexDetailsStatusPreview() {
+    PokedexTheme {
+        DetailsStatus(pokemonInfo = PreviewUtils.mockPokemonInfo())
     }
 }
