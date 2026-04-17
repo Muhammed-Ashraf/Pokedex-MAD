@@ -42,6 +42,28 @@ landscapist = "2.8.0"
 
 composeStableMarker = "1.0.7"
 
+androidxDataStore = "1.1.7"
+# Protobuf / Proto DataStore — two different version lines on purpose:
+#
+# protobufPlugin (e.g. 0.9.x)
+#   - Version of the GRADLE PLUGIN: id "com.google.protobuf"
+#   - Wires Gradle to run protoc, compile src/main/proto/*.proto, generate Java/Kotlin (lite) sources.
+#   - Released on its own schedule; NOT the same as protobuf runtime 4.x.
+#
+# protobuf (e.g. 4.31.x)
+#   - Version of the Google Protobuf 4.x LINE used for DEPENDENCIES, typically:
+#     - com.google.protobuf:protoc (compiler artifact in protobuf { protoc { ... } })
+#     - com.google.protobuf:protobuf-kotlin-lite (runtime for lite-generated code)
+#   - Keeps protoc + kotlin-lite aligned with generated code.
+#
+# You generally need BOTH: one for "how Gradle generates code", one for "which protoc + lite libs".
+protobufPlugin = "0.9.5"
+protobuf = "4.31.1"
+
+
+
+
+
 [libraries]
 #default when creating project
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -97,6 +119,18 @@ landscapist-palette = { group = "com.github.skydoves", name = "landscapist-palet
 
 compose-stable-marker = { group = "com.github.skydoves", name = "compose-stable-marker", version.ref = "composeStableMarker" }
 
+androidx-dataStore = { group = "androidx.datastore", name = "datastore", version.ref = "androidxDataStore" }
+
+# protobuf-protoc  → com.google.protobuf:protoc
+#   Build-time: the protoc compiler (Gradle runs it via protobuf { protoc { artifact = ... } }).
+#
+# protobuf-kotlin-lite → com.google.protobuf:protobuf-kotlin-lite
+#   Compile/runtime: Kotlin protobuf "lite" support for generated code + your module.
+#
+# Same version.ref = "protobuf" so compiler + runtime stay on one Protobuf release (e.g. 4.31.x).
+protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protobuf" }
+protobuf-kotlin-lite = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "protobuf" }
+
 #Unit Test
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
@@ -133,3 +167,4 @@ kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", vers
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 compose-stability-analyzer = { id = "com.github.skydoves.compose.stability.analyzer", version.ref = "composeStabilityAnalyzer" }
+protobuf-plugin = { id = "com.google.protobuf", version.ref = "protobufPlugin" }

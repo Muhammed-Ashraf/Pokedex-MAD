@@ -46,5 +46,6 @@ include(":core:designsystem")
 include(":core:navigation")
 include(":core:viewmodel")
 include(":core:preview")
+include(":core:datastore")
 
 include(":feature:home")

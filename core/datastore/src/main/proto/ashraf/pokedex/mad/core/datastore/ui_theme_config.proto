@@ -1,0 +1,22 @@
+// =============================================================================
+// Theme preference as persisted in Proto DataStore (enum only).
+// Gradle generates Kotlin/Java lite types from this file (see :core:datastore build).
+// Map UiThemeConfigProto <-> ashraf.pokedex.mad.core.model.UiTheme in Kotlin code.
+// =============================================================================
+
+syntax = "proto3";
+
+// Where generated Java classes live (Kotlin codegen often mirrors this package).
+option java_package = "ashraf.pokedex.mad.core.datastore";
+// One .java file per top-level type (cleaner generated code).
+option java_multiple_files = true;
+
+// Stored value for "which UI theme the user chose".
+// Names mirror the reference project; numeric values are stable on disk — do not renumber.
+enum UiThemeConfigProto {
+  // proto3: first enum value must be 0. Means "unset / read as default" in app logic.
+  UI_THEME_CONFIG_UNSPECIFIED = 0;
+  UI_THEME_CONFIG_FOLLOW_SYSTEM = 1;
+  UI_THEME_CONFIG_LIGHT = 2;
+  UI_THEME_CONFIG_DARK = 3;
+}
