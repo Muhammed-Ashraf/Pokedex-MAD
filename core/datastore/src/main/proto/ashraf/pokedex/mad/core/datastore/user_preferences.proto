@@ -1,0 +1,18 @@
+// =============================================================================
+// Root message stored in Proto DataStore: one binary blob = one UserPreferences.
+// Add new fields with new field numbers (2, 3, …); never reuse numbers (compatibility).
+// =============================================================================
+
+syntax = "proto3";
+
+// Path is relative to src/main/proto/ (slashes, not dots).
+import "ashraf/pokedex/mad/core/datastore/ui_theme_config.proto";
+
+option java_package = "ashraf.pokedex.mad.core.datastore";
+option java_multiple_files = true;
+
+// Top-level type passed to DataStore<UserPreferences> (plus a Serializer implementation).
+message UserPreferences {
+  // Field number 1 — stable id in the serialized wire format (do not change once shipped).
+  UiThemeConfigProto ui_theme_config = 1;
+}
