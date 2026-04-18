@@ -2,7 +2,6 @@ package ashraf.pokedex.mad.navigation
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
@@ -18,6 +17,7 @@ import ashraf.pokedex.mad.core.navigation.PokedexNavigatorImpl
 import ashraf.pokedex.mad.core.navigation.PokedexScreen
 import ashraf.pokedex.mad.feature.details.PokedexDetails
 import ashraf.pokedex.mad.feature.home.PokedexHome
+import ashraf.pokedex.mad.feature.settings.PokedexSettings
 import com.skydoves.compose.stability.runtime.TraceRecomposition
 
 /**
@@ -104,14 +104,10 @@ fun PokedexNavHost() {
                             pokemon = screen.pokemon
                         )
                     }
-
-
                     entry<PokedexScreen.Settings>(
-                        // Render settings as a dialog scene (reference style).
                         metadata = DialogSceneStrategy.dialog(),
                     ) {
-                        // TODO(Phase 5.7.2): Replace with PokedexSettings(...) screen.
-                        Text(text = "Settings (placeholder dialog)")
+                        PokedexSettings()
                     }
                 },
             )
