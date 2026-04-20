@@ -79,9 +79,9 @@ fun PokedexHome(
     val composeNavigator = currentComposeNavigator
 
     Column(modifier = Modifier.fillMaxSize()) {
-        PokedexAppBar {
-            //todo later
-        }
+        PokedexAppBar(
+            onActionClick = { composeNavigator.navigate(PokedexScreen.Settings) }
+        )
         HomeContent(
             sharedTransitionScope = sharedTransitionScope,
             animatedContentScope = animatedContentScope,

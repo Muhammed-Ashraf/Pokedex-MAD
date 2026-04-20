@@ -49,4 +49,4 @@ include(":core:preview")
 include(":core:datastore")
 
 include(":feature:home")
-include(":feature:home")
+include(":feature:settings")

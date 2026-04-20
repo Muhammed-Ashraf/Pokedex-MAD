@@ -69,6 +69,7 @@ dependencies {
 
     // features
     implementation(projects.feature.home)
+    implementation(projects.feature.settings)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
