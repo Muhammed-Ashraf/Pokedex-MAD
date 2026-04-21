@@ -20,6 +20,12 @@ android {
     namespace = "ashraf.pokedex.mad.core.network"
     // BuildConfig is enabled so NetworkModule can gate logging via BuildConfig.DEBUG.
     buildFeatures { buildConfig = true }
+
+    // JVM unit tests (src/test) do not run on a device; OkHttp touches android.util.Log unless
+    // unmocked Android APIs return defaults. See: https://developer.android.com/r/studio-ui/build/not-mocked
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 dependencies {
