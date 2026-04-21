@@ -455,9 +455,31 @@ Spotless is already applied via the **Spotless convention plugin** (Phase 2.6): 
 
 ---
 
-## Phase 8: CI/CD (GitHub Actions)
+## Phase 8: CI/CD (GitHub Actions) + release hardening
 
-*Steps will be added here when we start this phase.*
+This phase combines **automation in CI** with **release-quality builds** (shrinking, rules, signing). Baseline profiles for *startup* stay in **Phase 9**; here we focus on **APK size / R8** and **shipping a release**.
+
+### 8.1 CI (GitHub Actions)
+
+- Add a workflow that runs on PR / push: `./gradlew test`, `spotlessCheck`, and `:app:assembleDebug` (or your chosen variant).
+- Optionally run **`assembleRelease`** on `main` or tags so shrinker issues surface early (see 8.2).
+- Cache Gradle (`~/.gradle`) to keep CI fast.
+
+### 8.2 Code shrinking & optimization (R8)
+
+- In **`app`** `release` (or a dedicated `minified` buildType): set **`isMinifyEnabled = true`** when you are ready to debug R8 (start with `false` until you have rules).
+- Optionally **`isShrinkResources = true`** after minify is stable (removes unused resources; requires careful testing).
+- Maintain **`proguard-rules.pro`** (app) and **`consumer-rules.pro`** in libraries (e.g. **`:core:datastore`** protobuf lite keeps) so **DataStore / Retrofit / Hilt** keep working under shrink.
+- Run **`./gradlew :app:assembleRelease`** locally and smoke-test: cold start, network, Room, settings/theme, navigation.
+
+### 8.3 Signing & secrets
+
+- Add **release signing** (`signingConfigs`) using **local** `keystore.properties` or CI secrets — never commit keystores or passwords to git.
+- Document how you build a release AAB/APK for yourself or Play Console.
+
+### 8.4 CI + release together
+
+- CI should at least **compile** release (or run R8 on a nightly job) so regressions in ProGuard rules are caught before you cut a store build.
 
 ---
 
@@ -481,6 +503,7 @@ The reference **pokedex-compose** is a **finished** repo. This roadmap was writt
 | **Landscapist** (images) | List/detail images | Not in app Gradle yet | **Phase 5** when UI shows sprites |
 | **core:model extras** | parcelize, immutable collections, stable marker | Minimal model | Optional when you need them |
 | **Baseline profile + macrobenchmark** | `:baselineprofile`, benchmark module | Not yet | **Phase 9** |
+| **Release (R8 minify, shrink resources, ProGuard/consumer rules, signing)** | Release-ready `app` + CI | Debug-oriented defaults | **Phase 8.2–8.4** — shrinking is not baseline profiles; see Phase 8 |
 | **Full root `plugins { }` block** | Many `apply false` aliases | Subset + convention plugins | Expand as you add modules (test APK, baseline, etc.) |
 | **Android library + Compose convention** for features | Feature modules share Compose config | App has compose convention | **Phase 5** when you add `feature:*` modules |
 | **Spotless at root** | Sometimes applied at root | Per-module via convention | Either is valid |
@@ -504,4 +527,4 @@ The reference **pokedex-compose** is a **finished** repo. This roadmap was writt
 
 ---
 
-*Last updated: Phase 5.7 — DataStore + settings screen; clarified DataStore use beyond settings.*
+*Last updated: Phase 8 — CI/CD + release hardening (R8/shrink/signing); reference parity row for release builds.*
