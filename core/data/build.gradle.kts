@@ -40,6 +40,13 @@ dependencies {
     // Sandwich: handy operators for handling API responses (Success / Error).
     implementation(libs.sandwich)
 
-    // Not added yet (we'll add exactly when needed):
-    // - Test deps (turbine/mockito/coroutines-test): Phase 6
+    testImplementation(projects.core.test)
+    testImplementation(libs.kotlinx.coroutines.test)
+    // unit test
+    testImplementation(libs.junit)
+    testImplementation(libs.turbine)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.protobuf.kotlin.lite)
 }
