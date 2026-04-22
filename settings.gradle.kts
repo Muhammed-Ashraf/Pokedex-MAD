@@ -47,6 +47,7 @@ include(":core:navigation")
 include(":core:viewmodel")
 include(":core:preview")
 include(":core:datastore")
+include(":core:test")
 
 include(":feature:home")
 include(":feature:settings")

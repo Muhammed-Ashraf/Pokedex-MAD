@@ -20,6 +20,12 @@ android {
     namespace = "ashraf.pokedex.mad.core.network"
     // BuildConfig is enabled so NetworkModule can gate logging via BuildConfig.DEBUG.
     buildFeatures { buildConfig = true }
+
+    // JVM unit tests (src/test) do not run on a device; OkHttp touches android.util.Log unless
+    // unmocked Android APIs return defaults. See: https://developer.android.com/r/studio-ui/build/not-mocked
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 dependencies {
@@ -43,4 +49,15 @@ dependencies {
 
     // --- Coroutines: Retrofit suspend functions and future repo/ViewModel use.
     implementation(libs.kotlinx.coroutines.android)
+
+    // --- Unit tests (reference core:network — no explicit junit here; core:test supplies JUnit on the test graph).
+
+    // Shared test utilities: MainCoroutinesRule, MockUtil, etc. JUnit is pulled in via this module’s graph (see :core:test).
+    testImplementation(projects.core.test)
+    // runTest, TestDispatcher, and coroutine APIs used by ApiAbstract / service tests together with MainCoroutinesRule.
+    testImplementation(libs.kotlinx.coroutines.test)
+    // In-process fake HTTP server so Retrofit hits local URLs and tests enqueue JSON from src/test/resources (MockWebServer).
+    testImplementation(libs.okhttp.mockwebserver)
+    // InstantTaskExecutorRule: runs architecture-components background tasks synchronously in JVM unit tests (reference ApiAbstract).
+    testImplementation(libs.androidx.arch.core.testing)
 }
