@@ -15,6 +15,23 @@ Simplified plan: **mirror the reference** (`pokedex-compose`) where it matches s
 | Repositories | `:core:data` | `UserDataRepository`, `HomeRepositoryImpl`, `DetailsRepository` tests |
 | ViewModels | `:feature:home`, `:feature:settings` | `HomeViewModel`, `DetailsViewModel`, `SettingsViewModel` tests |
 
+Per-feature Gradle: `testImplementation` for JUnit, `kotlinx-coroutines-test`, and `projects.core.test` where needed.
+
+**Run:** `./gradlew test` (or module-scoped `testDebugUnitTest` for Android library modules).
+
+---
+
+## Out of scope (deferred)
+
+The following were considered and **skipped for now** (complexity, emulator flakiness, or low priority vs. current unit coverage):
+
+- **Instrumented `androidTest`** on the full app (e.g. `MainActivity` + `createAndroidComposeRule` smoke): not pursuing until there is CI + time to harden splash/Hilt/waits.
+- **Compose UI tests** as a separate milestone: same bucket as above unless done as **isolated** `setContent { … }` + fakes (no full activity).
+- **Navigation E2E** on device: not planned; optional later improvement is **JVM tests** for navigator / back stack only.
+
+Optional polish (only if you want it later): Turbine for awkward flows; Paparazzi for screenshot-style composable checks on JVM.
+
+---
 
 ## Original mirror checklist (reference-aligned)
 
