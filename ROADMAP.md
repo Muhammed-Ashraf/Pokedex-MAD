@@ -3,7 +3,24 @@
 Build this app step-by-step using the reference:  
 `D:\Study\Android\SkyDove\pokedex-compose-04-02-2026`
 
-**How to use:** Work through phases in order. Check off steps as you complete them. This file will be updated incrementally as we add new steps.
+**How to use:** Phases **1 → 6** are at a **completed baseline** for this repo (see snapshot below). **Next roadmap work:** **Phase 8** (CI + release hardening), then **Phase 9** (baseline profiles). Older step tables below still teach the journey; **✅ / ⬜** in summary rows is kept in sync with what exists in git.
+
+---
+
+## Status snapshot (current repo)
+
+| Phase | State | Notes |
+|-------|--------|--------|
+| **1–2** | ✅ | Version catalog, `build-logic`, Android library / Hilt / Spotless / feature / application convention plugins. |
+| **3** | ✅ | `core:model` + serialization. |
+| **4** | ✅ | `core:network`, `core:database`, `core:common`, `core:data`, `PokedexClient`, repositories, Hilt modules; app convention plugins on `:app`. |
+| **5** | ✅ | `core:designsystem` (theme + **Landscapist** re-exports), `core:navigation`, `core:viewmodel`, `core:preview`, **`feature:home`**, **`feature:settings`**, Navigation 3 + `PokedexNavHost`, home/details UI, **`core:datastore`** + settings/theme. |
+| **6** | ✅ | Unit tests across `core:*` and feature ViewModels; details in **`TESTING_PLAN.md`**. Full-app **`androidTest` / Compose UI smoke** intentionally **out of scope** for now. |
+| **7** | ✅ | Spotless via convention plugin; run `spotlessCheck` locally / in CI. |
+| **8** | ⬜ **Next** | GitHub Actions (or CI): `test`, `spotlessCheck`, `assembleDebug`; later release signing + R8 (see Phase 8). |
+| **9** | ⬜ | Baseline profiles + optional macrobenchmark (when you want startup work). |
+
+**Naming note:** The roadmap originally said **`feature:designsystem`**; this project uses **`core:designsystem`** (shared UI tokens + Landscapist APIs) — same role for theming and previews.
 
 ---
 
@@ -42,11 +59,11 @@ In the reference there are many entries under `[plugins]`. You don’t need all 
 
 | Step | Task | Status |
 |------|------|--------|
-| 2.1 | Create `build-logic/` at project root. Add `build-logic/settings.gradle.kts` that includes a subproject (e.g. `convention`). Add `build-logic/convention/build.gradle.kts` with `kotlin-dsl`, Java 17, and `compileOnly` for AGP, Kotlin, Compose compiler (from root libs). | ⬜ |
-| 2.2 | In root `settings.gradle.kts`, add `pluginManagement { includeBuild("build-logic") }` so the root build can apply your convention plugin ids. | ⬜ |
-| 2.3 | In `build-logic/convention/`, create shared Kotlin config: e.g. `KotlinAndroid.kt` with `configureKotlinAndroid(CommonExtension)` (compileSdk, minSdk, Java 17, compileOptions) and `configureKotlinAndroid(KotlinAndroidProjectExtension)` (jvmTarget, freeCompilerArgs). | ⬜ |
-| 2.4 | Create **Android library convention plugin**: applies `com.android.library` and `org.jetbrains.kotlin.android`, calls `configureKotlinAndroid` for both extensions. Register in `build-logic/convention/build.gradle.kts` with an id (e.g. `yourproject.android.library`). | ⬜ |
-| 2.5 | Sync. Verify: root build can resolve the plugin (no need to use it in a module until Phase 3). | ⬜ |
+| 2.1 | Create `build-logic/` at project root. Add `build-logic/settings.gradle.kts` that includes a subproject (e.g. `convention`). Add `build-logic/convention/build.gradle.kts` with `kotlin-dsl`, Java 17, and `compileOnly` for AGP, Kotlin, Compose compiler (from root libs). | ✅ |
+| 2.2 | In root `settings.gradle.kts`, add `pluginManagement { includeBuild("build-logic") }` so the root build can apply your convention plugin ids. | ✅ |
+| 2.3 | In `build-logic/convention/`, create shared Kotlin config: e.g. `KotlinAndroid.kt` with `configureKotlinAndroid(CommonExtension)` (compileSdk, minSdk, Java 17, compileOptions) and `configureKotlinAndroid(KotlinAndroidProjectExtension)` (jvmTarget, freeCompilerArgs). | ✅ |
+| 2.4 | Create **Android library convention plugin**: applies `com.android.library` and `org.jetbrains.kotlin.android`, calls `configureKotlinAndroid` for both extensions. Register in `build-logic/convention/build.gradle.kts` with an id (e.g. `yourproject.android.library`). | ✅ |
+| 2.5 | Sync. Verify: root build can resolve the plugin (no need to use it in a module until Phase 3). | ✅ |
 
 **Reference:** `build-logic/convention/build.gradle.kts`, `AndroidLibraryConventionPlugin.kt`, `KotlinAndroid.kt`, root `settings.gradle.kts` (includeBuild).
 
@@ -210,7 +227,7 @@ Use this checklist to confirm nothing is missed compared to the reference projec
 
 | Area | Reference | Yours | Notes |
 |------|-----------|--------|--------|
-| settings.gradle.kts | includeBuild, TYPESAFE_PROJECT_ACCESSORS, include app, core:model, core:network | Same | You have fewer includes (no feature/core:data yet) — expected. |
+| settings.gradle.kts | includeBuild, TYPESAFE_PROJECT_ACCESSORS, includes for app + core + features | Same | Includes **`feature:home`**, **`feature:settings`**, datastore, test, etc. |
 | Root build.gradle.kts | apply false for app, library, kotlin, hilt, ksp, etc. | Same | Reference also applies Spotless at root; we apply per-module — both valid. |
 | App | Hilt + Spotless via convention plugins; Application @HiltAndroidApp | Same | Reference also uses application + application.compose convention plugins; we apply android/kotlin/compose in app explicitly — OK. |
 | core:model | library + serialization + spotless, namespace, kotlinx.serialization.json | Same | Reference adds parcelize, ksp, stable.marker, immutable — see Optional below. |
@@ -226,7 +243,7 @@ Use this checklist to confirm nothing is missed compared to the reference projec
 | core:model — ksp | Reference has it. | Only if you add a dependency that uses KSP in core:model; skip for now. |
 | core:model — compose.stable.marker, kotlinx.immutable.collection | Reference has compileOnly(stable.marker), api(immutable.collection). | When you want Compose stability checking or immutable collections in model; not required for PokeAPI flow. |
 | Application convention plugin | Reference has android.application + android.application.compose so app has no android { } block. | Phase 5 or later if you want app build to be minimal like reference; current app config is fine. |
-| core:network — core:test, mockwebserver | Reference has testImplementation(core.test), mockwebserver, arch.core.testing. | When you add core:test and write network tests (Phase 6). |
+| core:network — core:test, mockwebserver | Reference has testImplementation(core.test), mockwebserver, arch.core.testing. | **Done** — `:core:test` + network tests; add extras (e.g. Arch) only if needed. |
 
 **Do before or while doing 4.1.3–4.1.6:**
 
@@ -245,11 +262,11 @@ Use this checklist to confirm nothing is missed compared to the reference projec
 
 | Step | Task | Status |
 |------|------|--------|
-| 3.1 | Create folders: `core/model/`, `core/model/build.gradle.kts`, `core/model/src/main/kotlin/` + your package path (e.g. `ashraf/pokedex/mad/core/model/`). | ⬜ |
-| 3.2 | In `settings.gradle.kts`, add: `include(":core:model")`. | ⬜ |
-| 3.3 | In `core/model/build.gradle.kts`: apply your **convention plugin** (e.g. `id("yourproject.android.library")`), `alias(libs.plugins.kotlinx.serialization)`. Set `namespace`. Add `implementation(libs.kotlinx.serialization.json)` only. No compileSdk/minSdk here—convention plugin provides them. | ⬜ |
-| 3.4 | Create one model class (e.g. `Pokemon.kt`) in the package with a few fields; add `@Serializable`. | ⬜ |
-| 3.5 | Sync. Optionally in `app`: `implementation(projects.core.model)` and use the model in a composable to verify. | ⬜ |
+| 3.1 | Create folders: `core/model/`, `core/model/build.gradle.kts`, `core/model/src/main/kotlin/` + your package path (e.g. `ashraf/pokedex/mad/core/model/`). | ✅ |
+| 3.2 | In `settings.gradle.kts`, add: `include(":core:model")`. | ✅ |
+| 3.3 | In `core/model/build.gradle.kts`: apply your **convention plugin** (e.g. `id("yourproject.android.library")`), `alias(libs.plugins.kotlinx.serialization)`. Set `namespace`. Add `implementation(libs.kotlinx.serialization.json)` only. No compileSdk/minSdk here—convention plugin provides them. | ✅ |
+| 3.4 | Create one model class (e.g. `Pokemon.kt`) in the package with a few fields; add `@Serializable`. | ✅ |
+| 3.5 | Sync. Optionally in `app`: `implementation(projects.core.model)` and use the model in a composable to verify. | ✅ |
 
 ---
 
@@ -275,12 +292,12 @@ Use this checklist to confirm nothing is missed compared to the reference projec
 
 | Step | Task | Status |
 |------|------|--------|
-| 4.1.1 | Create `core/network/` with `build.gradle.kts`, `src/main/AndroidManifest.xml`, `src/main/kotlin/` + package path (e.g. `ashraf/pokedex/mad/core/network/`). Add `include(":core:network")` in `settings.gradle.kts`. | ⬜ |
-| 4.1.2 | In `core/network/build.gradle.kts`: apply convention plugin, kotlinx.serialization; set namespace. Deps: `implementation(projects.core.model)`, Retrofit (BOM + retrofit + converter-kotlinx-serialization), OkHttp (BOM + logging-interceptor), kotlinx.serialization.json, coroutines-android. Optional: Hilt (so NetworkModule can provide Retrofit). | ⬜ |
-| 4.1.3 | Add **PokemonResponse.kt** in `core/network` (e.g. in `model/` subpackage): `@Serializable` data class with `count`, `next`, `previous`, `results: List<Pokemon>`. Uses `Pokemon` from core:model. | ⬜ |
-| 4.1.4 | Add **PokedexService.kt**: Retrofit interface with `@GET("pokemon") suspend fun fetchPokemonList(@Query("limit") limit, @Query("offset") offset): PokemonResponse`. Base URL will be `https://pokeapi.co/api/v2/`. | ⬜ |
-| 4.1.5 | Add **NetworkModule.kt** (Hilt): provide `Json`, `OkHttpClient`, `Retrofit`, `PokedexService`. Base URL `https://pokeapi.co/api/v2/`, kotlinx.serialization converter. Enable `buildConfig = true` in core:network if you use BuildConfig.DEBUG for logging. | ⬜ |
-| 4.1.6 | In `app/build.gradle.kts` add `implementation(projects.core.network)`. Sync; app should build (no need to use the service in UI yet). | ⬜ |
+| 4.1.1 | Create `core/network/` with `build.gradle.kts`, `src/main/AndroidManifest.xml`, `src/main/kotlin/` + package path (e.g. `ashraf/pokedex/mad/core/network/`). Add `include(":core:network")` in `settings.gradle.kts`. | ✅ |
+| 4.1.2 | In `core/network/build.gradle.kts`: apply convention plugin, kotlinx.serialization; set namespace. Deps: `implementation(projects.core.model)`, Retrofit (BOM + retrofit + converter-kotlinx-serialization), OkHttp (BOM + logging-interceptor), kotlinx.serialization.json, coroutines-android. Optional: Hilt (so NetworkModule can provide Retrofit). | ✅ |
+| 4.1.3 | Add **PokemonResponse.kt** in `core/network` (e.g. in `model/` subpackage): `@Serializable` data class with `count`, `next`, `previous`, `results: List<Pokemon>`. Uses `Pokemon` from core:model. | ✅ |
+| 4.1.4 | Add **PokedexService.kt**: Retrofit interface with `@GET("pokemon") suspend fun fetchPokemonList(@Query("limit") limit, @Query("offset") offset): PokemonResponse`. Base URL will be `https://pokeapi.co/api/v2/`. | ✅ |
+| 4.1.5 | Add **NetworkModule.kt** (Hilt): provide `Json`, `OkHttpClient`, `Retrofit`, `PokedexService`. Base URL `https://pokeapi.co/api/v2/`, kotlinx.serialization converter. Enable `buildConfig = true` in core:network if you use BuildConfig.DEBUG for logging. | ✅ |
+| 4.1.6 | In `app/build.gradle.kts` add `implementation(projects.core.network)`. Sync; app should build (no need to use the service in UI yet). | ✅ |
 
 **Reference:** `core/network/` in pokedex-compose (build.gradle.kts, PokedexService, PokemonResponse, NetworkModule).
 
@@ -335,12 +352,12 @@ Use this checklist to confirm nothing is missed compared to the reference projec
 
 | Step | Task | Status |
 |------|------|--------|
-| 4.2.1 | Create `core/database/` with `build.gradle.kts`, `src/main/AndroidManifest.xml`, `src/main/kotlin/` + package path (e.g. `ashraf/pokedex/mad/core/database/`). Add `include(":core:database")` in `settings.gradle.kts`. | ⬜ |
-| 4.2.2 | In `core/database/build.gradle.kts`: apply `id("ashraf.pokedex.mad.android.library")`, `id("ashraf.pokedex.mad.android.hilt")`, `id("ashraf.pokedex.mad.spotless")`, `alias(libs.plugins.ksp)`. Set `namespace = "ashraf.pokedex.mad.core.database"`. In `android { defaultConfig { ksp { arg("room.schemaLocation", "$projectDir/schemas") } } }` and in `sourceSets["test"]` add `assets.srcDir("$projectDir/schemas")`. Deps: `implementation(projects.core.model)`, `implementation(libs.androidx.room.runtime)`, `implementation(libs.androidx.room.ktx)`, `ksp(libs.androidx.room.compiler)`, `implementation(libs.kotlinx.coroutines.android)`. | ⬜ |
-| 4.2.3 | Add **PokemonEntity** in `entity/` (tableName = `"pokemon"`, fields: `page: Int`, `name: String` as `@PrimaryKey`, `url: String`). Add **PokemonDao** (insert list, get page, get all up to page). Add **PokedexDatabase** (`@Database(entities = [PokemonEntity], version = 1, exportSchema = true)`) with `abstract fun pokemonDao(): PokemonDao`. | ⬜ |
-| 4.2.4 | Add Hilt **DatabaseModule** in `di/` that provides `PokedexDatabase` (using `Room.databaseBuilder(application, PokedexDatabase::class.java, "Pokedex.db").fallbackToDestructiveMigration().build()`) and `PokemonDao` from the database. | ⬜ |
-| 4.2.5 | Add an **EntityMapper** interface and **PokemonEntityMapper** in `entity/mapper/` that converts between `List<Pokemon>` and `List<PokemonEntity>` plus extension functions `List<Pokemon>.asEntity()` and `List<PokemonEntity>?.asDomain()`. This mirrors the reference and keeps Room types out of `core:model`. | ⬜ |
-| 4.2.6 | In `app/build.gradle.kts` add `implementation(projects.core.database)`. Sync; app should build (no UI change yet). | ⬜ |
+| 4.2.1 | Create `core/database/` with `build.gradle.kts`, `src/main/AndroidManifest.xml`, `src/main/kotlin/` + package path (e.g. `ashraf/pokedex/mad/core/database/`). Add `include(":core:database")` in `settings.gradle.kts`. | ✅ |
+| 4.2.2 | In `core/database/build.gradle.kts`: apply `id("ashraf.pokedex.mad.android.library")`, `id("ashraf.pokedex.mad.android.hilt")`, `id("ashraf.pokedex.mad.spotless")`, `alias(libs.plugins.ksp)`. Set `namespace = "ashraf.pokedex.mad.core.database"`. In `android { defaultConfig { ksp { arg("room.schemaLocation", "$projectDir/schemas") } } }` and in `sourceSets["test"]` add `assets.srcDir("$projectDir/schemas")`. Deps: `implementation(projects.core.model)`, `implementation(libs.androidx.room.runtime)`, `implementation(libs.androidx.room.ktx)`, `ksp(libs.androidx.room.compiler)`, `implementation(libs.kotlinx.coroutines.android)`. | ✅ |
+| 4.2.3 | Add **PokemonEntity** in `entity/` (tableName = `"pokemon"`, fields: `page: Int`, `name: String` as `@PrimaryKey`, `url: String`). Add **PokemonDao** (insert list, get page, get all up to page). Add **PokedexDatabase** (`@Database(entities = [PokemonEntity], version = 1, exportSchema = true)`) with `abstract fun pokemonDao(): PokemonDao`. | ✅ |
+| 4.2.4 | Add Hilt **DatabaseModule** in `di/` that provides `PokedexDatabase` (using `Room.databaseBuilder(application, PokedexDatabase::class.java, "Pokedex.db").fallbackToDestructiveMigration().build()`) and `PokemonDao` from the database. | ✅ |
+| 4.2.5 | Add an **EntityMapper** interface and **PokemonEntityMapper** in `entity/mapper/` that converts between `List<Pokemon>` and `List<PokemonEntity>` plus extension functions `List<Pokemon>.asEntity()` and `List<PokemonEntity>?.asDomain()`. This mirrors the reference and keeps Room types out of `core:model`. | ✅ |
+| 4.2.6 | In `app/build.gradle.kts` add `implementation(projects.core.database)`. Sync; app should build (no UI change yet). | ✅ |
 
 **Reference:** `core/database/` in pokedex-compose (build.gradle.kts, PokemonEntity, PokemonDao, PokedexDatabase, DatabaseModule, entity mappers). We will start with only the list entity/DAO; detail entities and converters can be added later when we implement the detail screen.
 
@@ -354,10 +371,10 @@ Use this checklist to confirm nothing is missed compared to the reference projec
 
 | Step | Task | Status |
 |------|------|--------|
-| 4.3.1 | Create `core/common/` as a **pure Kotlin/JVM** module. In `settings.gradle.kts` add `include(":core:common")`. In `core/common/build.gradle.kts`: use **`kotlin("jvm")`** (not `alias(libs.plugins.kotlin.jvm)` — see note below), `alias(libs.plugins.ksp)`. Deps: `implementation(libs.hilt.core)`, `implementation(libs.kotlinx.coroutines.core)`, `ksp(libs.hilt.compiler)`. No AndroidManifest; no `android {}` block. | ⬜ |
-| 4.3.2 | **Strict mirror of reference** `core/common`: add in package `ashraf.pokedex.mad.core.common.network` — **PokedexAppScope.kt** (qualifier), **PokedexAppDispatchers.kt** (qualifier `@Dispatcher` + enum `PokedexAppDispatchers { IO }`), **DispatchersModule.kt** (provides IO dispatcher), **CoroutineScopesModule.kt** (provides app-wide `CoroutineScope` with `@PokedexAppScope`). Copy structure from reference `core/common/src/main/java/.../core/common/network/`. | ⬜ |
-| 4.3.3 | In **core:network**, add **PokedexClient** in package `ashraf.pokedex.mad.core.network.service`: inject `PokedexService`, expose `suspend fun fetchPokemonList(page: Int): ApiResponse<PokemonResponse>` (page → limit/offset internally, e.g. page size 20). Ensure `core:network` has Sandwich dependency. | ⬜ |
-| 4.3.4 | (Done in Phase 4.4.) When implementing **HomeRepositoryImpl** in core:data, inject **PokedexClient** (not PokedexService) and use its `fetchPokemonList(page)`; handle `ApiResponse` with Sandwich operators in the repository. | ⬜ |
+| 4.3.1 | Create `core/common/` as a **pure Kotlin/JVM** module. In `settings.gradle.kts` add `include(":core:common")`. In `core/common/build.gradle.kts`: use **`kotlin("jvm")`** (not `alias(libs.plugins.kotlin.jvm)` — see note below), `alias(libs.plugins.ksp)`. Deps: `implementation(libs.hilt.core)`, `implementation(libs.kotlinx.coroutines.core)`, `ksp(libs.hilt.compiler)`. No AndroidManifest; no `android {}` block. | ✅ |
+| 4.3.2 | **Strict mirror of reference** `core/common`: add in package `ashraf.pokedex.mad.core.common.network` — **PokedexAppScope.kt** (qualifier), **PokedexAppDispatchers.kt** (qualifier `@Dispatcher` + enum `PokedexAppDispatchers { IO }`), **DispatchersModule.kt** (provides IO dispatcher), **CoroutineScopesModule.kt** (provides app-wide `CoroutineScope` with `@PokedexAppScope`). Copy structure from reference `core/common/src/main/java/.../core/common/network/`. | ✅ |
+| 4.3.3 | In **core:network**, add **PokedexClient** in package `ashraf.pokedex.mad.core.network.service`: inject `PokedexService`, expose `suspend fun fetchPokemonList(page: Int): ApiResponse<PokemonResponse>` (page → limit/offset internally, e.g. page size 20). Ensure `core:network` has Sandwich dependency. | ✅ |
+| 4.3.4 | (Done in Phase 4.4.) When implementing **HomeRepositoryImpl** in core:data, inject **PokedexClient** (not PokedexService) and use its `fetchPokemonList(page)`; handle `ApiResponse` with Sandwich operators in the repository. | ✅ |
 
 **Note (4.3.1):** The reference uses `alias(libs.plugins.kotlin.jvm)`. In this project the Kotlin plugin is already on the classpath (build-logic/root), so applying the JVM plugin with a version via the catalog causes a conflict. Use `kotlin("jvm")` in `core/common/build.gradle.kts` instead; behavior is the same.
 
@@ -369,14 +386,14 @@ Use this checklist to confirm nothing is missed compared to the reference projec
 
 | Step | Task | Status |
 |------|------|--------|
-| 4.4.1 | Create `core/data/` with `build.gradle.kts`, `src/main/AndroidManifest.xml`, `src/main/kotlin/` + package path (e.g. `ashraf/pokedex/mad/core/data/`). Add `include(":core:data")` in `settings.gradle.kts`. | ⬜ |
-| 4.4.2 | In `core/data/build.gradle.kts`: apply `id("ashraf.pokedex.mad.android.library")`, `id("ashraf.pokedex.mad.android.hilt")`, `id("ashraf.pokedex.mad.spotless")`. Set `namespace = "ashraf.pokedex.mad.core.data"`. Deps: `implementation(projects.core.model)`, `implementation(projects.core.network)`, `implementation(projects.core.database)`, `implementation(libs.kotlinx.coroutines.android)`. | ⬜ |
-| 4.4.3 | Define a **HomeRepository** interface in `core/data` (e.g. `fetchPokemonList(page, onStart, onComplete, onLastPageReached, onError): Flow<List<Pokemon>>`), mirroring the reference shape. | ⬜ |
-| 4.4.4 | Implement **HomeRepositoryImpl**: inject `PokedexClient` and `PokemonDao`; implement offline-first flow similar to reference: try DB; if empty, call network (Sandwich ApiResponse), on success store to DB and emit; on failure, call `onError`. Use mappers `List<Pokemon>.asEntity()` / `List<PokemonEntity>?.asDomain()`. | ⬜ |
-| 4.4.5 | Add a **DataModule** (Hilt) in `core/data` that binds `HomeRepository` to `HomeRepositoryImpl` (e.g. with `@Binds` or `@Provides`). | ⬜ |
-| 4.4.6 | In `app/build.gradle.kts` add `implementation(projects.core.data)`. Later, ViewModels in feature modules will inject `HomeRepository` and expose UI state. | ⬜ |
+| 4.4.1 | Create `core/data/` with `build.gradle.kts`, `src/main/AndroidManifest.xml`, `src/main/kotlin/` + package path (e.g. `ashraf/pokedex/mad/core/data/`). Add `include(":core:data")` in `settings.gradle.kts`. | ✅ |
+| 4.4.2 | In `core/data/build.gradle.kts`: apply `id("ashraf.pokedex.mad.android.library")`, `id("ashraf.pokedex.mad.android.hilt")`, `id("ashraf.pokedex.mad.spotless")`. Set `namespace = "ashraf.pokedex.mad.core.data"`. Deps: `implementation(projects.core.model)`, `implementation(projects.core.network)`, `implementation(projects.core.database)`, `implementation(libs.kotlinx.coroutines.android)`. | ✅ |
+| 4.4.3 | Define a **HomeRepository** interface in `core/data` (e.g. `fetchPokemonList(page, onStart, onComplete, onLastPageReached, onError): Flow<List<Pokemon>>`), mirroring the reference shape. | ✅ |
+| 4.4.4 | Implement **HomeRepositoryImpl**: inject `PokedexClient` and `PokemonDao`; implement offline-first flow similar to reference: try DB; if empty, call network (Sandwich ApiResponse), on success store to DB and emit; on failure, call `onError`. Use mappers `List<Pokemon>.asEntity()` / `List<PokemonEntity>?.asDomain()`. | ✅ |
+| 4.4.5 | Add a **DataModule** (Hilt) in `core/data` that binds `HomeRepository` to `HomeRepositoryImpl` (e.g. with `@Binds` or `@Provides`). | ✅ |
+| 4.4.6 | In `app/build.gradle.kts` add `implementation(projects.core.data)`. Later, ViewModels in feature modules will inject `HomeRepository` and expose UI state. | ✅ |
 
-**Reference:** `core/data` in pokedex-compose (HomeRepositoryImpl, DetailsRepositoryImpl, DI bindings). We start with the home/list flow (HomeRepository); detail flow and tests will be added in dedicated subphases so you can focus on one concept at a time.
+**Reference:** `core/data` in pokedex-compose (HomeRepositoryImpl, DetailsRepositoryImpl, DI bindings). This repo includes **home + details + user-data** repositories and **Phase 6** unit tests for the main repository surfaces.
 
 ---
 
@@ -388,16 +405,16 @@ Use this checklist to confirm nothing is missed compared to the reference projec
 
 | Step | Task | Status |
 |------|------|--------|
-| 4.5.1 | In `build-logic/convention/`, add an **application** convention plugin (e.g. `AndroidApplicationConventionPlugin.kt`) that applies `com.android.application` + `org.jetbrains.kotlin.android` and configures compileSdk/minSdk/targetSdk + Java 17. Register it with id `ashraf.pokedex.mad.android.application`. | ⬜ |
-| 4.5.2 | (Optional) Add an **application.compose** convention plugin that enables Compose (`buildFeatures.compose = true`), sets `composeOptions.kotlinCompilerExtensionVersion` if needed, and adds Compose BOM + core Compose deps. Register it with id `ashraf.pokedex.mad.android.application.compose`. | ⬜ |
-| 4.5.3 | Update `app/build.gradle.kts` to use the new convention plugin id(s) and delete duplicated `android { }` config that is now provided by build-logic (keep app-specific config only). | ⬜ |
-| 4.5.4 | Sync and run `:app:assembleDebug` to confirm the app still builds. | ⬜ |
+| 4.5.1 | In `build-logic/convention/`, add an **application** convention plugin (e.g. `AndroidApplicationConventionPlugin.kt`) that applies `com.android.application` + `org.jetbrains.kotlin.android` and configures compileSdk/minSdk/targetSdk + Java 17. Register it with id `ashraf.pokedex.mad.android.application`. | ✅ |
+| 4.5.2 | (Optional) Add an **application.compose** convention plugin that enables Compose (`buildFeatures.compose = true`), sets `composeOptions.kotlinCompilerExtensionVersion` if needed, and adds Compose BOM + core Compose deps. Register it with id `ashraf.pokedex.mad.android.application.compose`. | ✅ |
+| 4.5.3 | Update `app/build.gradle.kts` to use the new convention plugin id(s) and delete duplicated `android { }` config that is now provided by build-logic (keep app-specific config only). | ✅ |
+| 4.5.4 | Sync and run `:app:assembleDebug` to confirm the app still builds. | ✅ |
 
 ---
 
 ## Phase 5: Design system, navigation, ViewModel, previews — then features
 
-**Concept:** Match the reference: **design system** (theme) → **navigation** (routes/graph) → then **ViewModels + screens** with **`@Preview`** wrapped in the same `Theme`. **DataStore is deferred** (see 5.7); list/detail data already use **Room + repositories** — DataStore is only for preferences/settings.
+**Concept:** Match the reference: **design system** (theme) → **navigation** (routes/graph) → then **ViewModels + screens** with **`@Preview`** wrapped in the same `Theme`. List/detail data use **Room + repositories**; **DataStore** backs **user preferences** (theme, etc.) via **`core:datastore`** + **settings** (see 5.7).
 
 ### Recommended order (do before heavy home/detail coding)
 
@@ -410,12 +427,12 @@ Use this checklist to confirm nothing is missed compared to the reference projec
 
 | Step | Task | Status |
 |------|------|--------|
-| 5.1 | **`feature:designsystem`** module (reference: `feature/designsystem`): Android library + Compose + Spotless; `Theme`, colors, typography, shapes. Optional: **Android library + Compose** convention plugin in build-logic when feature modules need the same Compose setup as app. | ⬜ |
-| 5.2 | **`app`**: `implementation(projects.feature.designsystem)`; wrap root content in design-system **`Theme { … }`**. | ⬜ |
-| 5.3 | **Navigation**: Compose Navigation or Navigation 3 (match catalog); define routes, `NavHost`, home → detail placeholder. **Reference:** home → detail flow. | ⬜ |
-| 5.4 | **Home**: `HomeViewModel` (`@HiltViewModel`, `HomeRepository`) + `HomeScreen` (list, loading, error). Use **`@Preview`** for list/empty/error states inside **`Theme`**. Either **`feature:home`** module or temporarily under `app`, then extract. | ⬜ |
-| 5.5 | **Detail**: `DetailViewModel` + screen; wire route + args; **`DetailsRepository`** + DB detail entities when ready (see core:database TODOs). | ⬜ |
-| 5.6 | **Images**: Landscapist (or Coil) in Gradle when list/detail show sprites — **Reference** uses Landscapist. | ⬜ |
+| 5.1 | **Design system module** — reference uses `feature:designsystem`; here **`core:designsystem`**: Compose + Spotless; `PokedexTheme`, colors, typography; **`android.feature`** convention for feature modules. | ✅ |
+| 5.2 | **`app`** (and features): depend on **`core:designsystem`**; root UI wrapped in **`PokedexTheme`** (see `PokedexMain`). | ✅ |
+| 5.3 | **Navigation 3**: `PokedexScreen`, `PokedexNavHost` in `app`, `NavDisplay`, home → details → settings dialog. | ✅ |
+| 5.4 | **`feature:home`**: `HomeViewModel`, `PokedexHome`, list/loading/error, previews / `FakeHomeRepository` where needed. | ✅ |
+| 5.5 | **Details**: `DetailsViewModel` (`feature:home` details package), `PokedexDetails`, **`DetailsRepository`** + **`PokemonInfo`** Room path in **`core:database`**. | ✅ |
+| 5.6 | **Landscapist**: re-exported from **`core:designsystem`** for list/detail images. | ✅ |
 
 ### 5.7 — DataStore + **settings** (and other preference UIs)
 
@@ -425,8 +442,8 @@ Use this checklist to confirm nothing is missed compared to the reference projec
 
 | Step | Task | Status |
 |------|------|--------|
-| 5.7.1 | Add **`core:datastore`** (or equivalent): `DataStore<Preferences>` or proto DataStore; Hilt module to inject it. **Reference:** mirror their datastore module when ready. | ⬜ |
-| 5.7.2 | **Settings screen** (e.g. `feature:settings` or route under app): theme toggle, toggles, etc. **`SettingsViewModel`** reads/writes DataStore. Add route from app bar / overflow menu. | ⬜ |
+| 5.7.1 | **`core:datastore`**: proto **UserPreferences** + `PreferencesDataSource`; Hilt wiring from **`core:data`** (`UserDataRepositoryImpl`). | ✅ |
+| 5.7.2 | **`feature:settings`**: `SettingsViewModel`, `PokedexSettings`, theme selection; entry from home app bar. | ✅ |
 
 **Where DataStore is needed *besides* settings UI**
 
@@ -445,13 +462,18 @@ So: **settings screen = main place users edit prefs**; **DataStore = storage** t
 
 ## Phase 6: Testing
 
-*Steps will be added here when we start this phase.*
+| Area | Done |
+|------|------|
+| `:core:test` | Helpers (`MainCoroutinesRule`, `MockUtil`, …). |
+| `:core:network` / `:core:database` / `:core:datastore` | Service, DAO, serializer / data source tests. |
+| `:core:data` | `UserDataRepository`, `HomeRepositoryImpl`, `DetailsRepository` tests. |
+| `:feature:home` / `:feature:settings` | `HomeViewModel`, `DetailsViewModel`, `SettingsViewModel` tests. |
 
 ---
 
 ## Phase 7: Code quality (Spotless)
 
-Spotless is already applied via the **Spotless convention plugin** (Phase 2.6): each module that applies `id("ashraf.pokedex.mad.spotless")` gets the same formatting and license-header rules. Root license files are in `spotless/spotless.license.kt` and `spotless/spotless.license.xml`. Run `./gradlew spotlessApply` to fix existing files; use `spotlessCheck` in CI. No extra Spotless steps are required unless you want to add more rules or formats.
+**Status: ✅** — Spotless is already applied via the **Spotless convention plugin** (Phase 2.6): each module that applies `id("ashraf.pokedex.mad.spotless")` gets the same formatting and license-header rules. Root license files are in `spotless/spotless.license.kt` and `spotless/spotless.license.xml`. Run `./gradlew spotlessApply` to fix existing files; use **`spotlessCheck` in CI** when Phase 8 is added. No extra Spotless steps are required unless you want to add more rules or formats.
 
 ---
 
@@ -495,18 +517,18 @@ The reference **pokedex-compose** is a **finished** repo. This roadmap was writt
 
 | Area | In reference (typical) | In this project now | When to add / notes |
 |------|----------------------|---------------------|---------------------|
-| **feature:designsystem** | Theme, colors, typography | Not yet | **Phase 5.1** |
-| **feature:home** / **feature:detail** | Screens + ViewModels in feature modules | UI still in `app` | **Phase 5.4–5.5** (or start in app, then extract) |
-| **core:test** | Shared test helpers, fakes | Not yet | **Phase 6** |
-| **DetailsRepository** + detail DB entities | Caches detail JSON | List-only DB so far | **Phase 5.5** + DB TODOs |
-| **DataStore / Protobuf** | Preferences / proto | Not yet | **Phase 5.7** — prefs storage; **5.7.2 settings screen** is typical UI; onboarding can write same store without settings |
-| **Landscapist** (images) | List/detail images | Not in app Gradle yet | **Phase 5** when UI shows sprites |
-| **core:model extras** | parcelize, immutable collections, stable marker | Minimal model | Optional when you need them |
+| **Design system module** | Often `feature:designsystem` | **`core:designsystem`** (+ Landscapist APIs) | Done — naming differs from reference; same role. |
+| **feature:home** / details UI | Screens + ViewModels in feature modules | **`feature:home`** (home + details composables), **`feature:settings`** | Done — `PokedexNavHost` lives in **`app`**. |
+| **core:test** | Shared test helpers, fakes | **`:core:test`** + unit tests across modules | Done — see **Phase 6** + **`TESTING_PLAN.md`**. |
+| **DetailsRepository** + detail DB | Caches detail payload | **`DetailsRepositoryImpl`**, **`PokemonInfo`** Room + DAO | Done — keep parity with reference as schema evolves. |
+| **DataStore / Protobuf** | Preferences / proto | **`core:datastore`** + **`UserDataRepository`** | Done — settings UI in **`feature:settings`**. |
+| **Landscapist** (images) | List/detail images | Via **`core:designsystem`** | Done. |
+| **core:model extras** | parcelize, immutable collections, stable marker | Minimal model + some kotlinx immutable usage | Optional when you need them |
 | **Baseline profile + macrobenchmark** | `:baselineprofile`, benchmark module | Not yet | **Phase 9** |
-| **Release (R8 minify, shrink resources, ProGuard/consumer rules, signing)** | Release-ready `app` + CI | Debug-oriented defaults | **Phase 8.2–8.4** — shrinking is not baseline profiles; see Phase 8 |
-| **Full root `plugins { }` block** | Many `apply false` aliases | Subset + convention plugins | Expand as you add modules (test APK, baseline, etc.) |
-| **Android library + Compose convention** for features | Feature modules share Compose config | App has compose convention | **Phase 5** when you add `feature:*` modules |
-| **Spotless at root** | Sometimes applied at root | Per-module via convention | Either is valid |
+| **Release (R8 minify, shrink resources, ProGuard/consumer rules, signing)** | Release-ready `app` + CI | Debug-oriented defaults | **Phase 8.2–8.4** |
+| **Full root `plugins { }` block** | Many `apply false` aliases | Subset + convention plugins | Expand as you add modules (baseline, etc.) |
+| **Android library + Compose convention** for features | Feature modules share Compose config | **`android.feature`** + app compose conventions | Done for **`feature:home`**, **`feature:settings`**. |
+| **Spotless** | Often at root or per module | **Per-module** via convention plugin | Done — add **`spotlessCheck`** in CI in **Phase 8**. |
 
 **Honest reason for gaps:** the assistant optimized for **one concept at a time** (network → DB → data) and did not always pre-list every reference module in the roadmap. This checklist is the **double-check** so you can track parity without redoing work.
 
@@ -527,4 +549,4 @@ The reference **pokedex-compose** is a **finished** repo. This roadmap was writt
 
 ---
 
-*Last updated: Phase 8 — CI/CD + release hardening (R8/shrink/signing); reference parity row for release builds.*
+*Last updated: Phases 1–7 marked complete in tables; **Phase 8 (CI + release)** is next; **Phase 9** baseline profiles after that. Reference parity table and `TESTING_PLAN.md` out-of-scope section restored if edited locally.*

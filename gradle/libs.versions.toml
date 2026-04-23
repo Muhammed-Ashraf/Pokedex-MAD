@@ -35,6 +35,8 @@ turbine = "1.2.0"
 mockito = "5.11.0"
 mockito-kotlin = "6.1.0"
 androidxTest = "1.6.1"
+# Room DAO unit tests on JVM (reference core:database PokemonDaoTest).
+robolectric = "4.13"
 # InstantTaskExecutorRule etc. for unit tests (reference core:network ApiAbstract).
 androidxArchCore = "2.2.0"
 
@@ -139,6 +141,7 @@ mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockito-kotlin" }
 androidx-test-core = { module = "androidx.test:core", version.ref = "androidxTest" }
 androidx-arch-core-testing = { module = "androidx.arch.core:core-testing", version.ref = "androidxArchCore" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 
 # Dependencies of the included build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }

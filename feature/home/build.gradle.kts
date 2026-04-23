@@ -6,3 +6,9 @@ plugins {
 android {
     namespace = "ashraf.pokedex.mad.feature.home"
 }
+
+dependencies {
+    testImplementation(projects.core.test)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.junit)
+}
