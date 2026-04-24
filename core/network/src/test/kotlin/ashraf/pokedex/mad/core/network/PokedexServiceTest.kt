@@ -1,3 +1,18 @@
+/*
+ * Designed and developed for Pokedex-MAD (learning project)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package ashraf.pokedex.mad.core.network
 
 import ashraf.pokedex.mad.core.network.service.PokedexService
@@ -10,11 +25,11 @@ import org.junit.Before
 import org.junit.Test
 import java.io.IOException
 
-@ExperimentalCoroutinesApi
 // This test class extends ApiAbstract → gives us:
 // - MockWebServer (fake backend)
 // - enqueueResponse()
 // - createService()
+@ExperimentalCoroutinesApi
 class PokedexServiceTest : ApiAbstract<PokedexService>() {
 
   // Retrofit API interface
@@ -30,7 +45,6 @@ class PokedexServiceTest : ApiAbstract<PokedexService>() {
   @Throws(IOException::class)
   @Test
   fun fetchPokemonListFromNetworkTest() = runTest {
-
     // Loads JSON file from:
     // test/resources/api-response/PokemonResponse.json
     // and enqueues it into MockWebServer
@@ -55,14 +69,13 @@ class PokedexServiceTest : ApiAbstract<PokedexService>() {
     assertThat(responseBody.results[0].nameField, `is`("bulbasaur"))
     assertThat(
       responseBody.results[0].url,
-      `is`("https://pokeapi.co/api/v2/pokemon/1/")
+      `is`("https://pokeapi.co/api/v2/pokemon/1/"),
     )
   }
 
   @Throws(IOException::class)
   @Test
   fun fetchPokemonInfoFromNetworkTest() = runTest {
-
     // Enqueue fake response for a single Pokémon
     enqueueResponse("Bulbasaur.json")
 

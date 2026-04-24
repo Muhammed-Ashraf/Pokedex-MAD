@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package ashraf.pokedex.mad.core.network
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
@@ -43,74 +42,74 @@ import java.nio.charset.StandardCharsets
 @RunWith(JUnit4::class)
 abstract class ApiAbstract<T> {
 
-    // Runs architecture-related background work synchronously in JVM unit tests (reference pattern).
-    @Rule
-    @JvmField
-    val instantExecutorRule: InstantTaskExecutorRule = InstantTaskExecutorRule()
+  // Runs architecture-related background work synchronously in JVM unit tests (reference pattern).
+  @Rule
+  @JvmField
+  val instantExecutorRule: InstantTaskExecutorRule = InstantTaskExecutorRule()
 
-    // Replaces Dispatchers.Main with a test dispatcher for the duration of each @Test.
-    @get:Rule
-    val coroutinesRule = MainCoroutinesRule()
+  // Replaces Dispatchers.Main with a test dispatcher for the duration of each @Test.
+  @get:Rule
+  val coroutinesRule = MainCoroutinesRule()
 
-    // In-process HTTP server; Retrofit baseUrl points here so no real network is used.
-    lateinit var mockWebServer: MockWebServer
+  // In-process HTTP server; Retrofit baseUrl points here so no real network is used.
+  lateinit var mockWebServer: MockWebServer
 
-    @Before
-    fun mockServer() {
-        mockWebServer = MockWebServer()
-        mockWebServer.start()
+  @Before
+  fun mockServer() {
+    mockWebServer = MockWebServer()
+    mockWebServer.start()
+  }
+
+  @After
+  fun stopServer() {
+    mockWebServer.shutdown()
+  }
+
+  /** Enqueue a response body from `src/test/resources/api-response/[fileName]`. */
+  fun enqueueResponse(fileName: String) {
+    enqueueResponse(fileName, emptyMap())
+  }
+
+  /**
+   * Loads JSON from the test classpath and queues it as the next HTTP response.
+   *
+   * @param fileName e.g. `"PokemonResponse.json"` — **no** leading `/` (avoids `api-response//...` in the path).
+   * @param headers optional response headers (e.g. `Link`, pagination).
+   */
+  private fun enqueueResponse(fileName: String, headers: Map<String, String>) {
+    // Classpath root is src/test/resources; path must match folder + file on disk.
+    val inputStream =
+      requireNotNull(javaClass.classLoader?.getResourceAsStream("api-response/$fileName")) {
+        "Missing test resource: api-response/$fileName (check src/test/resources)"
+      }
+    val body = inputStream.source().buffer().readString(StandardCharsets.UTF_8)
+    val mockResponse = MockResponse()
+    for ((key, value) in headers) {
+      mockResponse.addHeader(key, value)
     }
+    mockWebServer.enqueue(mockResponse.setBody(body))
+  }
 
-    @After
-    fun stopServer() {
-        mockWebServer.shutdown()
+  /**
+   * Builds a [Retrofit] instance matching production wiring (Json + Sandwich), but:
+   * - [baseUrl] targets [mockWebServer] instead of pokeapi.co.
+   * - No custom OkHttpClient here (tests use Retrofit defaults unless you add one).
+   *
+   * [Json] matches [ashraf.pokedex.mad.core.network.di.NetworkModule.provideJson] so parsing behaves the same.
+   */
+  fun createService(clazz: Class<T>): T {
+    val json = Json {
+      ignoreUnknownKeys = true
     }
-
-    /** Enqueue a response body from `src/test/resources/api-response/[fileName]`. */
-    fun enqueueResponse(fileName: String) {
-        enqueueResponse(fileName, emptyMap())
-    }
-
-    /**
-     * Loads JSON from the test classpath and queues it as the next HTTP response.
-     *
-     * @param fileName e.g. `"PokemonResponse.json"` — **no** leading `/` (avoids `api-response//...` in the path).
-     * @param headers optional response headers (e.g. `Link`, pagination).
-     */
-    private fun enqueueResponse(fileName: String, headers: Map<String, String>) {
-        // Classpath root is src/test/resources; path must match folder + file on disk.
-        val inputStream =
-            requireNotNull(javaClass.classLoader?.getResourceAsStream("api-response/$fileName")) {
-                "Missing test resource: api-response/$fileName (check src/test/resources)"
-            }
-        val body = inputStream.source().buffer().readString(StandardCharsets.UTF_8)
-        val mockResponse = MockResponse()
-        for ((key, value) in headers) {
-            mockResponse.addHeader(key, value)
-        }
-        mockWebServer.enqueue(mockResponse.setBody(body))
-    }
-
-    /**
-     * Builds a [Retrofit] instance matching production wiring (Json + Sandwich), but:
-     * - [baseUrl] targets [mockWebServer] instead of pokeapi.co.
-     * - No custom OkHttpClient here (tests use Retrofit defaults unless you add one).
-     *
-     * [Json] matches [ashraf.pokedex.mad.core.network.di.NetworkModule.provideJson] so parsing behaves the same.
-     */
-    fun createService(clazz: Class<T>): T {
-        val json = Json {
-            ignoreUnknownKeys = true
-        }
-        return Retrofit.Builder()
-            .baseUrl(mockWebServer.url("/"))
-            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
-            .addCallAdapterFactory(
-                ApiResponseCallAdapterFactory.create(
-                    coroutineScope = coroutinesRule.testScope,
-                ),
-            )
-            .build()
-            .create(clazz)
-    }
+    return Retrofit.Builder()
+      .baseUrl(mockWebServer.url("/"))
+      .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+      .addCallAdapterFactory(
+        ApiResponseCallAdapterFactory.create(
+          coroutineScope = coroutinesRule.testScope,
+        ),
+      )
+      .build()
+      .create(clazz)
+  }
 }

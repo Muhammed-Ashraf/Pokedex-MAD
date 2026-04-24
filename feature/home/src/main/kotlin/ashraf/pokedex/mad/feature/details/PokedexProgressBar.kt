@@ -36,7 +36,8 @@ import ashraf.pokedex.mad.core.designsystem.utils.pxToDp
 @Composable
 fun PokedexProgressBar(
     modifier: Modifier = Modifier,
-    @FloatRange(0.0, 1.0) progress: Float, // value between 0 and 1
+    // value between 0 and 1
+    @FloatRange(0.0, 1.0) progress: Float,
     color: Color,
     label: String,
 ) {
@@ -75,7 +76,8 @@ fun PokedexProgressBar(
         color = PokedexTheme.colors.absoluteWhite,
         shape = RoundedCornerShape(64.dp),
       )
-      .clip(RoundedCornerShape(64.dp)), // ensure children are clipped to rounded shape
+      // ensure children are clipped to rounded shape
+      .clip(RoundedCornerShape(64.dp)),
   ) {
 
     // Holds measured width of text (in px)

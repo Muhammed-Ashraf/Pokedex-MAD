@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package ashraf.pokedex.mad.core.database
 
 import androidx.room.Room
@@ -33,44 +32,41 @@ import org.junit.Before
  */
 abstract class LocalDatabase {
 
-    // The in-memory Room database instance
-    // lateinit means it will be initialized later in @Before
-    lateinit var db: PokedexDatabase
+  // The in-memory Room database instance
+  // lateinit means it will be initialized later in @Before
+  lateinit var db: PokedexDatabase
 
-    /**
-     * Runs BEFORE each test case.
-     * Responsible for creating a fresh in-memory database.
-     */
-    @Before
-    fun initDB() {
+  /**
+   * Runs BEFORE each test case.
+   * Responsible for creating a fresh in-memory database.
+   */
+  @Before
+  fun initDB() {
+    // Create a Kotlin serialization JSON instance
+    // ignoreUnknownKeys = true allows API/model changes without breaking parsing
+    val json = Json { ignoreUnknownKeys = true }
 
-        // Create a Kotlin serialization JSON instance
-        // ignoreUnknownKeys = true allows API/model changes without breaking parsing
-        val json = Json { ignoreUnknownKeys = true }
+    // Build an in-memory Room database (Robolectric provides Android Context).
+    db = Room.inMemoryDatabaseBuilder(
+      getApplicationContext(),
+      PokedexDatabase::class.java,
+    )
+      // Allows DB queries on main thread (only safe in tests)
+      .allowMainThreadQueries()
+      // Register type converters for complex objects
+      .addTypeConverter(TypeResponseConverter(json))
+      .addTypeConverter(StatsResponseConverter(json))
+      // Create the database instance
+      .build()
+  }
 
-        // Build an in-memory Room database
-        db = Room.inMemoryDatabaseBuilder(
-            getApplicationContext(),          // Android Context (provided by Robolectric)
-            PokedexDatabase::class.java       // Your Room database class
-        )
-            // Allows DB queries on main thread (only safe in tests)
-            .allowMainThreadQueries()
-
-            // Register type converters for complex objects
-            .addTypeConverter(TypeResponseConverter(json))
-            .addTypeConverter(StatsResponseConverter(json))
-
-            // Create the database instance
-            .build()
-    }
-
-    /**
-     * Runs AFTER each test case.
-     * Responsible for cleaning up resources.
-     */
-    @After
-    fun closeDB() {
-        // Closes the database to avoid memory leaks
-        db.close()
-    }
+  /**
+   * Runs AFTER each test case.
+   * Responsible for cleaning up resources.
+   */
+  @After
+  fun closeDB() {
+    // Closes the database to avoid memory leaks
+    db.close()
+  }
 }

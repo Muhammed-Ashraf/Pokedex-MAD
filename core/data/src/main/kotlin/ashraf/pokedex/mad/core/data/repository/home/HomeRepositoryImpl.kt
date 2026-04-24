@@ -1,10 +1,24 @@
+/*
+ * Designed and developed for Pokedex-MAD (learning project)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package ashraf.pokedex.mad.core.data.repository.home
 
 import androidx.annotation.VisibleForTesting
 import androidx.annotation.WorkerThread
 import ashraf.pokedex.mad.core.common.network.Dispatcher
 import ashraf.pokedex.mad.core.common.network.PokedexAppDispatchers
-
 import ashraf.pokedex.mad.core.database.PokemonDao
 import ashraf.pokedex.mad.core.database.entity.mapper.asDomain
 import ashraf.pokedex.mad.core.database.entity.mapper.asEntity
@@ -35,51 +49,50 @@ import javax.inject.Inject
  */
 @VisibleForTesting
 class HomeRepositoryImpl @Inject constructor(
-    private val pokedexClient: PokedexClient,
-    private val pokemonDao: PokemonDao,
-    // Inject the IO dispatcher defined in core:common.
-    @Dispatcher(PokedexAppDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
+  private val pokedexClient: PokedexClient,
+  private val pokemonDao: PokemonDao,
+  // Inject the IO dispatcher defined in core:common.
+  @Dispatcher(PokedexAppDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) : HomeRepository {
 
-    @WorkerThread
-    override fun fetchPokemonList(
-        page: Int,
-        onStart: () -> Unit,
-        onComplete: () -> Unit,
-        onLastPageReached: () -> Unit,
-        onError: (String?) -> Unit,
-    ): Flow<List<Pokemon>> = flow {
-        // Try to load this page from DB first.
-        var pokemons: List<Pokemon> = pokemonDao.getPokemonList(page).asDomain()
-        if (pokemons.isEmpty()) {
-            // No cache for this page → hit the network via PokedexClient.
-            val response: ApiResponse<PokemonResponse> =
-                pokedexClient.fetchPokemonList(page = page)
-            response
-                .suspendOnSuccess {
-                    // If next is null, reference treats this as the last page.
-                    if (data.next == null) {
-                        onLastPageReached()
-                    }
-                    // Take network results and attach the page index.
-                    pokemons = data.results
-                    pokemons.forEach { pokemon ->
-                        pokemon.page = page
-                    }
-                    // Save to DB and emit all pages up to this one.
-                    pokemonDao.insertPokemonList(pokemons.asEntity())
-                    emit(pokemonDao.getAllPokemonList(page).asDomain())
-                }
-                .onFailure {
-                    // Handles all API error cases.
-                    onError(message())
-                }
-        } else {
-            // Cache hit: just emit DB data (all pages up to this one).
-            emit(pokemonDao.getAllPokemonList(page).asDomain())
+  @WorkerThread
+  override fun fetchPokemonList(
+    page: Int,
+    onStart: () -> Unit,
+    onComplete: () -> Unit,
+    onLastPageReached: () -> Unit,
+    onError: (String?) -> Unit,
+  ): Flow<List<Pokemon>> = flow {
+    // Try to load this page from DB first.
+    var pokemons: List<Pokemon> = pokemonDao.getPokemonList(page).asDomain()
+    if (pokemons.isEmpty()) {
+      // No cache for this page → hit the network via PokedexClient.
+      val response: ApiResponse<PokemonResponse> =
+        pokedexClient.fetchPokemonList(page = page)
+      response
+        .suspendOnSuccess {
+          // If next is null, reference treats this as the last page.
+          if (data.next == null) {
+            onLastPageReached()
+          }
+          // Take network results and attach the page index.
+          pokemons = data.results
+          pokemons.forEach { pokemon ->
+            pokemon.page = page
+          }
+          // Save to DB and emit all pages up to this one.
+          pokemonDao.insertPokemonList(pokemons.asEntity())
+          emit(pokemonDao.getAllPokemonList(page).asDomain())
         }
-    }.onStart { onStart() }
-        .onCompletion { onComplete() }
-        .flowOn(ioDispatcher)// Run the flow work on the injected IO dispatcher.
-
+        .onFailure {
+          // Handles all API error cases.
+          onError(message())
+        }
+    } else {
+      // Cache hit: just emit DB data (all pages up to this one).
+      emit(pokemonDao.getAllPokemonList(page).asDomain())
+    }
+  }.onStart { onStart() }
+    .onCompletion { onComplete() }
+    .flowOn(ioDispatcher) // Run the flow work on the injected IO dispatcher.
 }

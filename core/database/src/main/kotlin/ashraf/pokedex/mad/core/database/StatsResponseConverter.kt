@@ -1,5 +1,5 @@
 /*
- * Designed and developed by 2024 skydoves (Jaewoong Eum)
+ * Designed and developed for Pokedex-MAD (learning project)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,28 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package ashraf.pokedex.mad.core.database
 
 import androidx.room.ProvidedTypeConverter
 import androidx.room.TypeConverter
 import ashraf.pokedex.mad.core.model.PokemonInfo
 import kotlinx.serialization.json.Json
-
 import javax.inject.Inject
 
 @ProvidedTypeConverter
 class StatsResponseConverter @Inject constructor(
-    private val json: Json,
+  private val json: Json,
 ) {
 
-    @TypeConverter
-    fun fromString(value: String): List<PokemonInfo.StatsResponse>? {
-        return json.decodeFromString(value)
-    }
+  @TypeConverter
+  fun fromString(value: String): List<PokemonInfo.StatsResponse>? {
+    return json.decodeFromString(value)
+  }
 
-    @TypeConverter
-    fun fromInfoType(type: List<PokemonInfo.StatsResponse>?): String {
-        return json.encodeToString(type)
-    }
+  @TypeConverter
+  fun fromInfoType(type: List<PokemonInfo.StatsResponse>?): String {
+    return json.encodeToString(type)
+  }
 }

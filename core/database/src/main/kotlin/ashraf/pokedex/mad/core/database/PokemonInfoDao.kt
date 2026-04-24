@@ -1,5 +1,5 @@
 /*
- * Designed and developed by 2024 skydoves (Jaewoong Eum)
+ * Designed and developed for Pokedex-MAD (learning project)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package ashraf.pokedex.mad.core.database
 
 import androidx.room.Dao
@@ -25,9 +24,9 @@ import ashraf.pokedex.mad.core.database.entity.PokemonInfoEntity
 @Dao
 interface PokemonInfoDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertPokemonInfo(pokemonInfo: PokemonInfoEntity)
+  @Insert(onConflict = OnConflictStrategy.REPLACE)
+  suspend fun insertPokemonInfo(pokemonInfo: PokemonInfoEntity)
 
-    @Query("SELECT * FROM PokemonInfoEntity WHERE name = :name_")
-    suspend fun getPokemonInfo(name_: String): PokemonInfoEntity?
+  @Query("SELECT * FROM PokemonInfoEntity WHERE name = :name_")
+  suspend fun getPokemonInfo(name_: String): PokemonInfoEntity?
 }

@@ -16,14 +16,17 @@ import javax.annotation.concurrent.Immutable
 // → Helps optimize recomposition (better performance)
 @Immutable
 internal data class PokedexStatus(
-    val type: String,           // Label like "HP", "ATK", etc.
+    // Label like "HP", "ATK", etc.
+    val type: String,
 
     // Ensures value is between 0.0 and 1.0 (used for progress bars)
     @FloatRange(0.0, 1.0)
     val progress: Float,
 
-    val color: Color,           // UI color for the stat bar
-    val label: String,          // Display string (e.g., "45 / 100")
+    // UI color for the stat bar
+    val color: Color,
+    // Display string (e.g., "45 / 100")
+    val label: String,
 )
 
 @Composable
@@ -43,7 +46,8 @@ internal fun PokemonInfo.toPokedexStatusList(): ImmutableList<PokedexStatus> {
             progress = hp / PokemonInfo.MAX_HP.toFloat(),
 
             color = PokedexTheme.colors.primary,
-            label = getHpString(),   // e.g., "45 / 100"
+            // e.g., "45 / 100"
+            label = getHpString(),
         ),
 
         // Attack status

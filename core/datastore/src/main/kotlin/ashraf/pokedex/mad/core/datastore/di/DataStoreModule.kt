@@ -1,5 +1,5 @@
 /*
- * Designed and developed by 2024 skydoves (Jaewoong Eum)
+ * Designed and developed for Pokedex-MAD (learning project)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package ashraf.pokedex.mad.core.datastore.di
 
 import android.content.Context
@@ -38,17 +37,17 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object DataStoreModule {
 
-    @Provides
-    @Singleton
-    fun providesUserPreferencesDataStore(
-        @ApplicationContext context: Context,
-        @Dispatcher(PokedexAppDispatchers.IO) dispatcher: CoroutineDispatcher,
-        @PokedexAppScope scope: CoroutineScope,
-        userPreferencesSerializer: UserPreferencesSerializer,
-    ): DataStore<UserPreferences> = DataStoreFactory
-        .create(
-            serializer = userPreferencesSerializer,
-            scope = CoroutineScope(scope.coroutineContext + dispatcher),
-            produceFile = { context.dataStoreFile(fileName = "user_preferences.pb") },
-        )
+  @Provides
+  @Singleton
+  fun providesUserPreferencesDataStore(
+    @ApplicationContext context: Context,
+    @Dispatcher(PokedexAppDispatchers.IO) dispatcher: CoroutineDispatcher,
+    @PokedexAppScope scope: CoroutineScope,
+    userPreferencesSerializer: UserPreferencesSerializer,
+  ): DataStore<UserPreferences> = DataStoreFactory
+    .create(
+      serializer = userPreferencesSerializer,
+      scope = CoroutineScope(scope.coroutineContext + dispatcher),
+      produceFile = { context.dataStoreFile(fileName = "user_preferences.pb") },
+    )
 }

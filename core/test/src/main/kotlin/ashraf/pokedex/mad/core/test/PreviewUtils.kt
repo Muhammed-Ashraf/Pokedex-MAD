@@ -1,5 +1,5 @@
 /*
- * Designed and developed by 2024 skydoves (Jaewoong Eum)
+ * Designed and developed for Pokedex-MAD (learning project)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package ashraf.pokedex.mad.core.test
 
 import ashraf.pokedex.mad.core.model.Pokemon
@@ -22,9 +21,9 @@ import ashraf.pokedex.mad.core.model.PokemonInfo
 object PreviewUtils {
 
   fun mockPokemon() = Pokemon(
-      page = 0,
-      nameField = "bulbasaur",
-      url = "https://pokeapi.co/api/v2/pokemon/1/",
+    page = 0,
+    nameField = "bulbasaur",
+    url = "https://pokeapi.co/api/v2/pokemon/1/",
   )
 
   fun mockPokemonList() = List(10) {
@@ -32,20 +31,20 @@ object PreviewUtils {
   }
 
   fun mockPokemonInfo() = PokemonInfo(
-      id = 1,
-      name = "bulbasaur",
-      height = 7,
-      weight = 69,
-      experience = 60,
-      types = listOf(
-          PokemonInfo.TypeResponse(slot = 0, type = PokemonInfo.Type("grass")),
-          PokemonInfo.TypeResponse(slot = 0, type = PokemonInfo.Type("poison")),
-      ),
-      stats = listOf(
-          PokemonInfo.StatsResponse(baseStat = 20, effort = 0, stat = PokemonInfo.Stat("hp")),
-          PokemonInfo.StatsResponse(baseStat = 40, effort = 0, stat = PokemonInfo.Stat("attack")),
-          PokemonInfo.StatsResponse(baseStat = 60, effort = 0, stat = PokemonInfo.Stat("defense")),
-          PokemonInfo.StatsResponse(baseStat = 80, effort = 0, stat = PokemonInfo.Stat("attack")),
-      ),
+    id = 1,
+    name = "bulbasaur",
+    height = 7,
+    weight = 69,
+    experience = 60,
+    types = listOf(
+      PokemonInfo.TypeResponse(slot = 0, type = PokemonInfo.Type("grass")),
+      PokemonInfo.TypeResponse(slot = 0, type = PokemonInfo.Type("poison")),
+    ),
+    stats = listOf(
+      PokemonInfo.StatsResponse(baseStat = 20, effort = 0, stat = PokemonInfo.Stat("hp")),
+      PokemonInfo.StatsResponse(baseStat = 40, effort = 0, stat = PokemonInfo.Stat("attack")),
+      PokemonInfo.StatsResponse(baseStat = 60, effort = 0, stat = PokemonInfo.Stat("defense")),
+      PokemonInfo.StatsResponse(baseStat = 80, effort = 0, stat = PokemonInfo.Stat("attack")),
+    ),
   )
 }

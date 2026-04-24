@@ -1,3 +1,18 @@
+/*
+ * Designed and developed for Pokedex-MAD (learning project)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package ashraf.pokedex.mad.core.database
 
 import androidx.room.Dao
@@ -15,29 +30,29 @@ import ashraf.pokedex.mad.core.database.entity.PokemonEntity
 @Dao
 interface PokemonDao {
 
-    /**
-     * Insert a whole page worth of Pokemon rows.
-     *
-     * REPLACE means: if the same primary key (name) already exists, overwrite it.
-     * This is useful when the network refetches and you want the cache updated.
-     */
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertPokemonList(pokemonList: List<PokemonEntity>)
+  /**
+   * Insert a whole page worth of Pokemon rows.
+   *
+   * REPLACE means: if the same primary key (name) already exists, overwrite it.
+   * This is useful when the network refetches and you want the cache updated.
+   */
+  @Insert(onConflict = OnConflictStrategy.REPLACE)
+  suspend fun insertPokemonList(pokemonList: List<PokemonEntity>)
 
-    /**
-     * Read exactly one page of pokemon from cache.
-     *
-     * This mirrors the reference method name and query shape.
-     */
-    @Query("SELECT * FROM pokemon WHERE page = :page_ ORDER BY name")
-    suspend fun getPokemonList(page_: Int): List<PokemonEntity>
+  /**
+   * Read exactly one page of pokemon from cache.
+   *
+   * This mirrors the reference method name and query shape.
+   */
+  @Query("SELECT * FROM pokemon WHERE page = :page_ ORDER BY name")
+  suspend fun getPokemonList(page_: Int): List<PokemonEntity>
 
-    /**
-     * Read all cached pages up to the given page (inclusive).
-     *
-     * The reference uses this pattern so the UI can show:
-     * page 0 + page 1 + ... + page N as one growing list.
-     */
-    @Query("SELECT * FROM pokemon WHERE page <= :page_ ORDER BY page, name")
-    suspend fun getAllPokemonList(page_: Int): List<PokemonEntity>
+  /**
+   * Read all cached pages up to the given page (inclusive).
+   *
+   * The reference uses this pattern so the UI can show:
+   * page 0 + page 1 + ... + page N as one growing list.
+   */
+  @Query("SELECT * FROM pokemon WHERE page <= :page_ ORDER BY page, name")
+  suspend fun getAllPokemonList(page_: Int): List<PokemonEntity>
 }

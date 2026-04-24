@@ -1,5 +1,5 @@
 /*
- * Designed and developed by 2024 skydoves (Jaewoong Eum)
+ * Designed and developed for Pokedex-MAD (learning project)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package ashraf.pokedex.mad.core.data.repository.userdata
 
 import ashraf.pokedex.mad.core.common.network.Dispatcher
@@ -27,14 +26,14 @@ import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 class UserDataRepositoryImpl @Inject constructor(
-    private val preferencesDataSource: PreferencesDataSource,
-    @Dispatcher(PokedexAppDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
+  private val preferencesDataSource: PreferencesDataSource,
+  @Dispatcher(PokedexAppDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) : UserDataRepository {
 
-    override val userData: Flow<UserData> = preferencesDataSource.userData
-        .flowOn(ioDispatcher)
+  override val userData: Flow<UserData> = preferencesDataSource.userData
+    .flowOn(ioDispatcher)
 
-    override suspend fun setUiTheme(uiTheme: UiTheme) {
-        preferencesDataSource.setUiTheme(uiTheme)
-    }
+  override suspend fun setUiTheme(uiTheme: UiTheme) {
+    preferencesDataSource.setUiTheme(uiTheme)
+  }
 }
