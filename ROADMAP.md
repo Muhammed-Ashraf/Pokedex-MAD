@@ -511,29 +511,6 @@ This phase combines **automation in CI** with **release-quality builds** (shrink
 
 ---
 
-## Reference parity checklist (why things looked “missing”)
-
-The reference **pokedex-compose** is a **finished** repo. This roadmap was written **incrementally** as you built layers (catalog → build-logic → core → data → app conventions). That is why some reference pieces appeared “missing” until we added them (e.g. **design system** in Phase 5). Use this table so nothing important is forgotten long-term.
-
-| Area | In reference (typical) | In this project now | When to add / notes |
-|------|----------------------|---------------------|---------------------|
-| **Design system module** | Often `feature:designsystem` | **`core:designsystem`** (+ Landscapist APIs) | Done — naming differs from reference; same role. |
-| **feature:home** / details UI | Screens + ViewModels in feature modules | **`feature:home`** (home + details composables), **`feature:settings`** | Done — `PokedexNavHost` lives in **`app`**. |
-| **core:test** | Shared test helpers, fakes | **`:core:test`** + unit tests across modules | Done — see **Phase 6** + **`TESTING_PLAN.md`**. |
-| **DetailsRepository** + detail DB | Caches detail payload | **`DetailsRepositoryImpl`**, **`PokemonInfo`** Room + DAO | Done — keep parity with reference as schema evolves. |
-| **DataStore / Protobuf** | Preferences / proto | **`core:datastore`** + **`UserDataRepository`** | Done — settings UI in **`feature:settings`**. |
-| **Landscapist** (images) | List/detail images | Via **`core:designsystem`** | Done. |
-| **core:model extras** | parcelize, immutable collections, stable marker | Minimal model + some kotlinx immutable usage | Optional when you need them |
-| **Baseline profile + macrobenchmark** | `:baselineprofile`, benchmark module | Not yet | **Phase 9** |
-| **Release (R8 minify, shrink resources, ProGuard/consumer rules, signing)** | Release-ready `app` + CI | Debug-oriented defaults | **Phase 8.2–8.4** |
-| **Full root `plugins { }` block** | Many `apply false` aliases | Subset + convention plugins | Expand as you add modules (baseline, etc.) |
-| **Android library + Compose convention** for features | Feature modules share Compose config | **`android.feature`** + app compose conventions | Done for **`feature:home`**, **`feature:settings`**. |
-| **Spotless** | Often at root or per module | **Per-module** via convention plugin | Done — add **`spotlessCheck`** in CI in **Phase 8**. |
-
-**Honest reason for gaps:** the assistant optimized for **one concept at a time** (network → DB → data) and did not always pre-list every reference module in the roadmap. This checklist is the **double-check** so you can track parity without redoing work.
-
----
-
 ### Phase 4 — Path we followed (summary for learners)
 
 | Order | Phase   | What we did |
@@ -545,7 +522,7 @@ The reference **pokedex-compose** is a **finished** repo. This roadmap was writt
 | 5     | **4.4** | **core:data** (module shell, HomeRepository interface, then HomeRepositoryImpl using PokedexClient + PokemonDao, DataModule, app depends on core:data). |
 | 6     | 4.5     | App convention plugin (optional, before Phase 5). |
 
-**Adjustments made along the way:** (1) core:common uses `kotlin("jvm")` instead of catalog alias for Kotlin JVM plugin to avoid classpath conflict. (2) core:common utilities are a strict mirror of the reference (qualifiers + dispatcher/scope modules only). (3) PokedexClient lives in `core:network.service` and is used by HomeRepositoryImpl in core:data.
+**Adjustments made along the way:** (1) core:common uses `kotlin("jvm")` instead of catalog alias for Kotlin JVM plugin to avoid classpath conflict.
 
 ---
 
