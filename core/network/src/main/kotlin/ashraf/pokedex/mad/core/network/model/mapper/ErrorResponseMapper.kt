@@ -1,5 +1,5 @@
 /*
- * Designed and developed by 2024 skydoves (Jaewoong Eum)
+ * Designed and developed for Pokedex-MAD (learning project)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package ashraf.pokedex.mad.core.network.model.mapper
-
 
 import ashraf.pokedex.mad.core.network.model.PokemonErrorResponse
 import com.skydoves.sandwich.ApiResponse
@@ -30,13 +28,13 @@ import com.skydoves.sandwich.retrofit.statusCode
  */
 object ErrorResponseMapper : ApiErrorModelMapper<PokemonErrorResponse> {
 
-    /**
-     * maps the [ApiResponse.Failure.Error] to the [PokemonErrorResponse] using the mapper.
-     *
-     * @param apiErrorResponse The [ApiResponse.Failure.Error] error response from the network request.
-     * @return A customized [PokemonErrorResponse] error response.
-     */
-    override fun map(apiErrorResponse: ApiResponse.Failure.Error): PokemonErrorResponse {
-        return PokemonErrorResponse(apiErrorResponse.statusCode.code, apiErrorResponse.message())
-    }
+  /**
+   * maps the [ApiResponse.Failure.Error] to the [PokemonErrorResponse] using the mapper.
+   *
+   * @param apiErrorResponse The [ApiResponse.Failure.Error] error response from the network request.
+   * @return A customized [PokemonErrorResponse] error response.
+   */
+  override fun map(apiErrorResponse: ApiResponse.Failure.Error): PokemonErrorResponse {
+    return PokemonErrorResponse(apiErrorResponse.statusCode.code, apiErrorResponse.message())
+  }
 }

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package ashraf.pokedex.mad.core.database
 
 import ashraf.pokedex.mad.core.database.entity.mapper.asEntity
@@ -32,22 +31,22 @@ import org.robolectric.annotation.Config
 @Config(sdk = [33])
 class PokemonDaoTest : LocalDatabase() {
 
-    private lateinit var pokemonDao: PokemonDao
+  private lateinit var pokemonDao: PokemonDao
 
-    @Before
-    fun init() {
-        pokemonDao = db.pokemonDao()
-    }
+  @Before
+  fun init() {
+    pokemonDao = db.pokemonDao()
+  }
 
-    @Test
-    fun insertAndLoadPokemonListTest() = runBlocking {
-        val mockDataList = mockPokemonList().asEntity()
-        pokemonDao.insertPokemonList(mockDataList)
+  @Test
+  fun insertAndLoadPokemonListTest() = runBlocking {
+    val mockDataList = mockPokemonList().asEntity()
+    pokemonDao.insertPokemonList(mockDataList)
 
-        val loadFromDB = pokemonDao.getPokemonList(page_ = 0)
-        assertThat(loadFromDB.toString(), `is`(mockDataList.toString()))
+    val loadFromDB = pokemonDao.getPokemonList(page_ = 0)
+    assertThat(loadFromDB.toString(), `is`(mockDataList.toString()))
 
-        val mockData = listOf(mockPokemon()).asEntity()[0]
-        assertThat(loadFromDB[0].toString(), `is`(mockData.toString()))
-    }
+    val mockData = listOf(mockPokemon()).asEntity()[0]
+    assertThat(loadFromDB[0].toString(), `is`(mockData.toString()))
+  }
 }

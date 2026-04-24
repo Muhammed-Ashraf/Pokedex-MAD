@@ -1,3 +1,18 @@
+/*
+ * Designed and developed for Pokedex-MAD (learning project)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package ashraf.pokedex.mad.core.data
 
 import app.cash.turbine.test
@@ -53,7 +68,7 @@ class HomeRepositoryImplTest {
     repository = HomeRepositoryImpl(
       client,
       pokemonDao,
-      coroutinesRule.testDispatcher
+      coroutinesRule.testDispatcher,
     )
   }
 
@@ -63,15 +78,14 @@ class HomeRepositoryImplTest {
    */
   @Test
   fun fetchPokemonListFromNetworkTest() = runTest {
-
     // Fake API response data
     val mockData =
-        PokemonResponse(
-            count = 984,
-            next = null,
-            previous = null,
-            results = mockPokemonList()
-        )
+      PokemonResponse(
+        count = 984,
+        next = null,
+        previous = null,
+        results = mockPokemonList(),
+      )
 
     // DB returns empty list → forces network call
     whenever(pokemonDao.getPokemonList(page_ = 0))
@@ -86,7 +100,7 @@ class HomeRepositoryImplTest {
       .thenReturn(
         ApiResponse.responseOf {
           Response.success(mockData)
-        }
+        },
       )
 
     // Call repository function and test emitted Flow
@@ -95,9 +109,8 @@ class HomeRepositoryImplTest {
       onStart = {},
       onComplete = {},
       onLastPageReached = {},
-      onError = {}
+      onError = {},
     ).test(2.toDuration(DurationUnit.SECONDS)) {
-
       // First emitted item from Flow
       val actualItem = awaitItem()[0]
 
@@ -130,14 +143,13 @@ class HomeRepositoryImplTest {
    */
   @Test
   fun fetchPokemonListFromDatabaseTest() = runTest {
-
     // Fake data
     val mockData =
       PokemonResponse(
         count = 984,
         next = null,
         previous = null,
-        results = mockPokemonList()
+        results = mockPokemonList(),
       )
 
     // DB already has data → should be used directly
@@ -148,13 +160,13 @@ class HomeRepositoryImplTest {
     whenever(pokemonDao.getAllPokemonList(page_ = 0))
       .thenReturn(mockData.results.asEntity())
 
-      // Mock API response
-      whenever(service.fetchPokemonList())
-          .thenReturn(
-              ApiResponse.responseOf {
-                  Response.success(mockData)
-              }
-          )
+    // Mock API response
+    whenever(service.fetchPokemonList())
+      .thenReturn(
+        ApiResponse.responseOf {
+          Response.success(mockData)
+        },
+      )
 
     // Call repository
     repository.fetchPokemonList(
@@ -164,7 +176,6 @@ class HomeRepositoryImplTest {
       onLastPageReached = {},
       onError = {},
     ).test(2.toDuration(DurationUnit.SECONDS)) {
-
       // First emitted item
       val actualItem = awaitItem()[0]
 
@@ -184,6 +195,6 @@ class HomeRepositoryImplTest {
     verify(pokemonDao, atLeastOnce()).getAllPokemonList(page_ = 0)
 
     // IMPORTANT: No service verification → network must NOT be called
-      verify(service, never()).fetchPokemonList()
+    verify(service, never()).fetchPokemonList()
   }
 }

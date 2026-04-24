@@ -1,3 +1,18 @@
+/*
+ * Designed and developed for Pokedex-MAD (learning project)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package ashraf.pokedex.mad.navigation
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -31,86 +46,70 @@ import com.skydoves.compose.stability.runtime.TraceRecomposition
 @Composable
 @TraceRecomposition
 fun PokedexNavHost() {
-    /**
-     * Navigation3 back stack.
-     * Start destination is Home.
-     */
-    val backStack = rememberNavBackStack(PokedexScreen.Home)
+  /**
+   * Navigation3 back stack.
+   * Start destination is Home.
+   */
+  val backStack = rememberNavBackStack(PokedexScreen.Home)
 
-    /**
-     * Strategy to render some destinations as dialogs.
-     * (Reference uses Settings as dialog scene.)
-     */
-    val dialogStrategy = remember { DialogSceneStrategy<NavKey>() }
+  /**
+   * Strategy to render some destinations as dialogs.
+   * (Reference uses Settings as dialog scene.)
+   */
+  val dialogStrategy = remember { DialogSceneStrategy<NavKey>() }
 
-    /**
-     * Our abstraction over back stack operations.
-     * Screens call navigator.navigate(...) / navigateUp() instead of directly touching backStack.
-     */
-    val navigator = remember(backStack) { PokedexNavigatorImpl(backStack) }
+  /**
+   * Our abstraction over back stack operations.
+   * Screens call navigator.navigate(...) / navigateUp() instead of directly touching backStack.
+   */
+  val navigator = remember(backStack) { PokedexNavigatorImpl(backStack) }
 
-    /**
-     * Provide navigator to all composables via CompositionLocal.
-     * Any child composable can access currentComposeNavigator.
-     */
-    CompositionLocalProvider(
-        LocalComposeNavigator provides navigator,
-    ) {
-        /**
-         * SharedTransitionLayout is kept now.
-         * Even if we are not doing advanced transitions yet, keeping this wrapper now
-         * avoids structure changes later.
-         */
-        SharedTransitionLayout {
-            NavDisplay(
-                /**
-                 * Source of truth for destinations.
-                 */
-                backStack = backStack,
+  /**
+   * Provide navigator to all composables via CompositionLocal.
+   * Any child composable can access currentComposeNavigator.
+   */
+  CompositionLocalProvider(
+    LocalComposeNavigator provides navigator,
+  ) {
+    // SharedTransitionLayout is kept now. Even if we are not doing advanced transitions yet,
+    // keeping this wrapper avoids structure changes later.
+    SharedTransitionLayout {
+      NavDisplay(
+        // Source of truth for destinations.
+        backStack = backStack,
 
-                /**
-                 * System/back action behavior: pop top destination if possible.
-                 */
-                onBack = { backStack.removeLastOrNull() },
+        // System/back action behavior: pop top destination if possible.
+        onBack = { backStack.removeLastOrNull() },
 
-                /**
-                 * Enables dialog scenes for destinations marked with dialog metadata.
-                 */
-                sceneStrategy = dialogStrategy,
+        // Enables dialog scenes for destinations marked with dialog metadata.
+        sceneStrategy = dialogStrategy,
 
-                /**
-                 * Preserves saved state for each nav entry.
-                 * Useful when returning to previous screens.
-                 */
-                entryDecorators = listOf(rememberSaveableStateHolderNavEntryDecorator()),
+        // Preserves saved state for each nav entry when returning to previous screens.
+        entryDecorators = listOf(rememberSaveableStateHolderNavEntryDecorator()),
 
-                /**
-                 * Destination mapping:
-                 * NavKey type -> Composable content.
-                 */
-                entryProvider = entryProvider<NavKey> {
-                    entry<PokedexScreen.Home> {
-                        PokedexHome(
-                            sharedTransitionScope = this@SharedTransitionLayout,
-                            animatedContentScope = LocalNavAnimatedContentScope.current,
-                        )
-                    }
-
-
-                    entry<PokedexScreen.Details> { screen ->
-                        PokedexDetails(
-                            sharedTransitionScope = this@SharedTransitionLayout,
-                            animatedContentScope = LocalNavAnimatedContentScope.current,
-                            pokemon = screen.pokemon
-                        )
-                    }
-                    entry<PokedexScreen.Settings>(
-                        metadata = DialogSceneStrategy.dialog(),
-                    ) {
-                        PokedexSettings()
-                    }
-                },
+        // Destination mapping: NavKey type -> Composable content.
+        entryProvider = entryProvider<NavKey> {
+          entry<PokedexScreen.Home> {
+            PokedexHome(
+              sharedTransitionScope = this@SharedTransitionLayout,
+              animatedContentScope = LocalNavAnimatedContentScope.current,
             )
-        }
+          }
+
+          entry<PokedexScreen.Details> { screen ->
+            PokedexDetails(
+              sharedTransitionScope = this@SharedTransitionLayout,
+              animatedContentScope = LocalNavAnimatedContentScope.current,
+              pokemon = screen.pokemon,
+            )
+          }
+          entry<PokedexScreen.Settings>(
+            metadata = DialogSceneStrategy.dialog(),
+          ) {
+            PokedexSettings()
+          }
+        },
+      )
     }
+  }
 }

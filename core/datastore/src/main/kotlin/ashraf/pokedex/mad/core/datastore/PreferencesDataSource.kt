@@ -1,5 +1,5 @@
 /*
- * Designed and developed by 2024 skydoves (Jaewoong Eum)
+ * Designed and developed for Pokedex-MAD (learning project)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package ashraf.pokedex.mad.core.datastore
 
 import androidx.datastore.core.DataStore
@@ -27,9 +26,9 @@ class PreferencesDataSource @Inject constructor(
 ) {
   val userData = userPreferences.data
     .map {
-        UserData(
-            uiTheme = it.uiThemeConfig.asUiTheme(),
-        )
+      UserData(
+        uiTheme = it.uiThemeConfig.asUiTheme(),
+      )
     }
 
   suspend fun setUiTheme(uiTheme: UiTheme) {

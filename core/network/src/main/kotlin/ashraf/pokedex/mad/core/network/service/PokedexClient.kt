@@ -1,5 +1,5 @@
 /*
- * Designed and developed by 2024 skydoves (Jaewoong Eum)
+ * Designed and developed for Pokedex-MAD (learning project)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package ashraf.pokedex.mad.core.network.service
 
 import ashraf.pokedex.mad.core.model.PokemonInfo
@@ -34,36 +33,36 @@ import javax.inject.Inject
  * in core:data (e.g. HomeRepositoryImpl) instead of injecting [PokedexService] directly.
  */
 class PokedexClient @Inject constructor(
-    // Retrofit interface that actually defines the HTTP calls.
-    private val pokedexService: PokedexService,
+  // Retrofit interface that actually defines the HTTP calls.
+  private val pokedexService: PokedexService,
 ) {
 
-    /**
-     * Fetches one "page" of Pokemon from the API.
-     *
-     * Inputs:
-     * - [page]: a zero-based page index (0, 1, 2, ...).
-     *
-     * How it works:
-     * - Converts page into (limit, offset) pair understood by the PokeAPI:
-     *     limit  = PAGING_SIZE (fixed page size)
-     *     offset = page * PAGING_SIZE
-     * - Delegates the actual HTTP call to [pokedexService].
-     * - Returns an [ApiResponse] so the caller can use Sandwich operators
-     *   (suspendOnSuccess / suspendOnError) for consistent error handling.
-     */
-    suspend fun fetchPokemonList(page: Int): ApiResponse<PokemonResponse> =
-        pokedexService.fetchPokemonList(
-            limit = PAGING_SIZE,
-            offset = page * PAGING_SIZE,
-        )
+  /**
+   * Fetches one "page" of Pokemon from the API.
+   *
+   * Inputs:
+   * - [page]: a zero-based page index (0, 1, 2, ...).
+   *
+   * How it works:
+   * - Converts page into (limit, offset) pair understood by the PokeAPI:
+   *     limit  = PAGING_SIZE (fixed page size)
+   *     offset = page * PAGING_SIZE
+   * - Delegates the actual HTTP call to [pokedexService].
+   * - Returns an [ApiResponse] so the caller can use Sandwich operators
+   *   (suspendOnSuccess / suspendOnError) for consistent error handling.
+   */
+  suspend fun fetchPokemonList(page: Int): ApiResponse<PokemonResponse> =
+    pokedexService.fetchPokemonList(
+      limit = PAGING_SIZE,
+      offset = page * PAGING_SIZE,
+    )
 
-    suspend fun fetchPokemonInfo(name: String): ApiResponse<PokemonInfo> =
-        pokedexService.fetchPokemonInfo(name)
+  suspend fun fetchPokemonInfo(name: String): ApiResponse<PokemonInfo> =
+    pokedexService.fetchPokemonInfo(name)
 
-    companion object {
-        // Number of items per "page" when requesting the Pokemon list.
-        // Kept here so both client and repositories share the same paging size.
-        private const val PAGING_SIZE = 20
-    }
+  companion object {
+    // Number of items per "page" when requesting the Pokemon list.
+    // Kept here so both client and repositories share the same paging size.
+    private const val PAGING_SIZE = 20
+  }
 }

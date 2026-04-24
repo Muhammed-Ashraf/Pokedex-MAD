@@ -3,7 +3,7 @@
 Build this app step-by-step using the reference:  
 `D:\Study\Android\SkyDove\pokedex-compose-04-02-2026`
 
-**How to use:** Phases **1 → 6** are at a **completed baseline** for this repo (see snapshot below). **Next roadmap work:** **Phase 8** (CI + release hardening), then **Phase 9** (baseline profiles). Older step tables below still teach the journey; **✅ / ⬜** in summary rows is kept in sync with what exists in git.
+**How to use:** Phases **1 → 6** are at a **completed baseline** for this repo (see snapshot below). **Next roadmap work:** **Phase 8.2–8.4** (release / R8 / signing); **8.1** CI workflow is in **`.github/workflows/android.yml`**. Then **Phase 9** (baseline profiles). Older step tables below still teach the journey; **✅ / ⬜** in summary rows is kept in sync with what exists in git.
 
 ---
 
@@ -17,7 +17,7 @@ Build this app step-by-step using the reference:
 | **5** | ✅ | `core:designsystem` (theme + **Landscapist** re-exports), `core:navigation`, `core:viewmodel`, `core:preview`, **`feature:home`**, **`feature:settings`**, Navigation 3 + `PokedexNavHost`, home/details UI, **`core:datastore`** + settings/theme. |
 | **6** | ✅ | Unit tests across `core:*` and feature ViewModels; details in **`TESTING_PLAN.md`**. Full-app **`androidTest` / Compose UI smoke** intentionally **out of scope** for now. |
 | **7** | ✅ | Spotless via convention plugin; run `spotlessCheck` locally / in CI. |
-| **8** | ⬜ **Next** | GitHub Actions (or CI): `test`, `spotlessCheck`, `assembleDebug`; later release signing + R8 (see Phase 8). |
+| **8** | 🟨 **In progress** | **8.1** ✅ `.github/workflows/android.yml`: `spotlessCheck`, `testDebugUnitTest`, `:app:assembleDebug` on `main` PR/push. **8.2–8.4** R8, signing, release in CI (see Phase 8). |
 | **9** | ⬜ | Baseline profiles + optional macrobenchmark (when you want startup work). |
 
 **Naming note:** The roadmap originally said **`feature:designsystem`**; this project uses **`core:designsystem`** (shared UI tokens + Landscapist APIs) — same role for theming and previews.
@@ -473,7 +473,7 @@ So: **settings screen = main place users edit prefs**; **DataStore = storage** t
 
 ## Phase 7: Code quality (Spotless)
 
-**Status: ✅** — Spotless is already applied via the **Spotless convention plugin** (Phase 2.6): each module that applies `id("ashraf.pokedex.mad.spotless")` gets the same formatting and license-header rules. Root license files are in `spotless/spotless.license.kt` and `spotless/spotless.license.xml`. Run `./gradlew spotlessApply` to fix existing files; use **`spotlessCheck` in CI** when Phase 8 is added. No extra Spotless steps are required unless you want to add more rules or formats.
+**Status: ✅** — Spotless is already applied via the **Spotless convention plugin** (Phase 2.6): each module that applies `id("ashraf.pokedex.mad.spotless")` gets the same formatting and license-header rules. Root license files are in `spotless/spotless.license.kt` and `spotless/spotless.license.xml`. Run `./gradlew spotlessApply` to fix existing files; **`spotlessCheck` in CI** runs from **`.github/workflows/android.yml`** (Phase 8.1). No extra Spotless steps are required unless you want to add more rules or formats.
 
 ---
 
@@ -483,9 +483,8 @@ This phase combines **automation in CI** with **release-quality builds** (shrink
 
 ### 8.1 CI (GitHub Actions)
 
-- Add a workflow that runs on PR / push: `./gradlew test`, `spotlessCheck`, and `:app:assembleDebug` (or your chosen variant).
+- **Done:** `.github/workflows/android.yml` — on PR/push to `main`: job **lint** (`spotlessCheck`), then **build** (`testDebugUnitTest`, `:app:assembleDebug`), Temurin 17, **`gradle/actions/setup-gradle`** for caching.
 - Optionally run **`assembleRelease`** on `main` or tags so shrinker issues surface early (see 8.2).
-- Cache Gradle (`~/.gradle`) to keep CI fast.
 
 ### 8.2 Code shrinking & optimization (R8)
 
@@ -526,4 +525,4 @@ This phase combines **automation in CI** with **release-quality builds** (shrink
 
 ---
 
-*Last updated: Phases 1–7 marked complete in tables; **Phase 8 (CI + release)** is next; **Phase 9** baseline profiles after that. Reference parity table and `TESTING_PLAN.md` out-of-scope section restored if edited locally.*
+*Last updated: **Phase 8.1** CI workflow added; **8.2–8.4** release hardening next; **Phase 9** baseline profiles after that.*
