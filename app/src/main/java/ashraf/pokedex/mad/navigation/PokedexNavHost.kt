@@ -56,38 +56,23 @@ fun PokedexNavHost() {
     CompositionLocalProvider(
         LocalComposeNavigator provides navigator,
     ) {
-        /**
-         * SharedTransitionLayout is kept now.
-         * Even if we are not doing advanced transitions yet, keeping this wrapper now
-         * avoids structure changes later.
-         */
+        // SharedTransitionLayout is kept now. Even if we are not doing advanced transitions yet,
+        // keeping this wrapper avoids structure changes later.
         SharedTransitionLayout {
             NavDisplay(
-                /**
-                 * Source of truth for destinations.
-                 */
+                // Source of truth for destinations.
                 backStack = backStack,
 
-                /**
-                 * System/back action behavior: pop top destination if possible.
-                 */
+                // System/back action behavior: pop top destination if possible.
                 onBack = { backStack.removeLastOrNull() },
 
-                /**
-                 * Enables dialog scenes for destinations marked with dialog metadata.
-                 */
+                // Enables dialog scenes for destinations marked with dialog metadata.
                 sceneStrategy = dialogStrategy,
 
-                /**
-                 * Preserves saved state for each nav entry.
-                 * Useful when returning to previous screens.
-                 */
+                // Preserves saved state for each nav entry when returning to previous screens.
                 entryDecorators = listOf(rememberSaveableStateHolderNavEntryDecorator()),
 
-                /**
-                 * Destination mapping:
-                 * NavKey type -> Composable content.
-                 */
+                // Destination mapping: NavKey type -> Composable content.
                 entryProvider = entryProvider<NavKey> {
                     entry<PokedexScreen.Home> {
                         PokedexHome(
