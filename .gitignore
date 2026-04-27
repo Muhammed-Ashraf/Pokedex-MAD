@@ -60,3 +60,4 @@ google-services.json
 .cxx
 /.vscode/settings.json
 .kotlin
+/keystores/
