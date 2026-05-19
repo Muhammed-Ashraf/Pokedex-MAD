@@ -8,12 +8,31 @@ pluginManagement {
     repositories {
         google {
             content {
-                includeGroupByRegex("com\\.android.*")
-                includeGroupByRegex("com\\.google.*")
-                includeGroupByRegex("androidx.*")
+                includeGroupByRegex("androidx\\..*")
+                includeGroupByRegex("com\\.android(\\..*|)")
+                includeGroupByRegex("com\\.google\\.android\\..*")
+                includeGroupByRegex("com\\.google\\.firebase(\\..*|)")
+                includeGroupByRegex("com\\.google\\.gms(\\..*|)")
+                includeGroupByRegex("com\\.google\\.mlkit")
+                includeGroupByRegex("com\\.google\\.oboe")
+                includeGroupByRegex("com\\.google\\.prefab")
+                includeGroupByRegex("com\\.google\\.testing\\.platform")
+            }
+            mavenContent {
+                releasesOnly()
             }
         }
-        mavenCentral()
+        // fetch plugins
+        mavenCentral() {
+            content {
+                includeGroup("com.google.dagger")
+                includeGroup("com.google.dagger.hilt.android")
+                includeGroup("com.github.skydoves.compose.stability.analyzer")
+            }
+            mavenContent {
+                releasesOnly()
+            }
+        }
 
         // Gradle Plugin Portal:
         // This is where Gradle looks up third‑party Gradle plugins by id,
@@ -25,13 +44,49 @@ pluginManagement {
         // "com.github.skydoves.compose.stability.analyzer" in build-logic
         // and Gradle will be able to download/resolve them.
         gradlePluginPortal()
+
+        // fetch snapshot plugins from sonatype
+        maven(url = "https://oss.sonatype.org/content/repositories/snapshots/") {
+            mavenContent {
+                snapshotsOnly()
+            }
+        }
     }
 }
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        google()
-        mavenCentral()
+        // fetch libraries from google maven (https://maven.google.com)
+        google() {
+            content {
+                includeGroupByRegex("androidx\\..*")
+                includeGroupByRegex("com\\.android(\\..*|)")
+                includeGroupByRegex("com\\.google\\.android\\..*")
+                includeGroupByRegex("com\\.google\\.firebase(\\..*|)")
+                includeGroupByRegex("com\\.google\\.gms(\\..*|)")
+                includeGroupByRegex("com\\.google\\.mlkit")
+                includeGroupByRegex("com\\.google\\.oboe")
+                includeGroupByRegex("com\\.google\\.prefab")
+                includeGroupByRegex("com\\.google\\.testing\\.platform")
+            }
+            mavenContent {
+                releasesOnly()
+            }
+        }
+
+        // fetch libraries from maven central
+        mavenCentral() {
+            mavenContent {
+                releasesOnly()
+            }
+        }
+
+        // fetch snapshot libraries from sonatype
+        maven(url = "https://oss.sonatype.org/content/repositories/snapshots/") {
+            mavenContent {
+                snapshotsOnly()
+            }
+        }
     }
 }
 
@@ -51,3 +106,5 @@ include(":core:test")
 
 include(":feature:home")
 include(":feature:settings")
+
+include(":baselineprofile")

@@ -13,12 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import java.util.Properties
+
 plugins {
     id("ashraf.pokedex.mad.android.application")
     id("ashraf.pokedex.mad.android.application.compose")
     id("ashraf.pokedex.mad.android.hilt")
     id("ashraf.pokedex.mad.spotless")
 }
+
+// Reference-style release signing: keys in root `local.properties` (gitignored).
+// If anything is missing or the keystore file is absent, `release` keeps using `debug` signing.
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.inputStream().use { localProperties.load(it) }
+}
+val releaseKeyAlias = localProperties.getProperty("RELEASE_KEY_ALIAS")
+val releaseKeyPassword = localProperties.getProperty("RELEASE_KEY_PASSWORD")
+val releaseStorePassword = localProperties.getProperty("RELEASE_KEYSTORE_PASSWORD")
+val releaseStorePath =
+    localProperties.getProperty("RELEASE_KEYSTORE_PATH") ?: "keystores/pokedex.jks"
+val releaseKeystoreFile = rootProject.file(releaseStorePath)
+val useLocalReleaseSigning =
+    listOf(releaseKeyAlias, releaseKeyPassword, releaseStorePassword).all { !it.isNullOrBlank() } &&
+        releaseKeystoreFile.isFile
 
 android {
     namespace = "ashraf.pokedex.mad"
@@ -31,15 +50,43 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    //todo signingconfig
+    signingConfigs {
+        if (useLocalReleaseSigning) {
+            create("releaseFromLocal") {
+                storeFile = releaseKeystoreFile
+                storePassword = releaseStorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
+            }
+        }
+    }
 
-    buildTypes { //todo
+    buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            // Step 4 (8.2): strip unused resources after R8; re-smoke-test release install if anything disappears at runtime.
+            isShrinkResources = true
+            signingConfig =
+                if (useLocalReleaseSigning) {
+                    signingConfigs.getByName("releaseFromLocal")
+                } else {
+                    signingConfigs.getByName("debug")
+                }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+            // Reference-aligned: drop tooling / debug-only files from the merged APK (smaller, fewer duplicate-resource issues).
+            packaging {
+                resources {
+                    excludes += listOf(
+                        "DebugProbesKt.bin",
+                        "kotlin-tooling-metadata.json",
+                        "kotlin/**",
+                    )
+                }
+            }
         }
     }
 
@@ -56,7 +103,11 @@ android {
         enableAggregatingTask = true
     }
 
-    //todo testoption
+    //uncomment if needed in future
+//    testOptions.unitTests {
+//        isIncludeAndroidResources = true
+//        isReturnDefaultValues = true
+//    }
 
 }
 
