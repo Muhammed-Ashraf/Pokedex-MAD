@@ -9,5 +9,7 @@ plugins {
     alias(libs.plugins.compose.stability.analyzer) apply false
     alias(libs.plugins.android.test) apply false
     alias(libs.plugins.baselineprofile) apply false
+    alias(libs.plugins.spotless)
+    alias(libs.plugins.kotlin.jvm) apply false
 
 }

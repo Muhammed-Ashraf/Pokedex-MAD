@@ -139,7 +139,7 @@ dependencies {
     implementation(projects.feature.settings)
 
     // cores
-    implementation(projects.core.model) //todo check last whether model is needed
+    implementation(projects.core.model)
     implementation(projects.core.data)
     implementation(projects.core.designsystem)
     implementation(projects.core.navigation)
