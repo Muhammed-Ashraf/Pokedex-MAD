@@ -3,7 +3,7 @@
 Build this app step-by-step using the reference:  
 `D:\Study\Android\SkyDove\pokedex-compose-04-02-2026`
 
-**How to use:** Phases **1 → 6** are at a **completed baseline** for this repo (see snapshot below). **Next roadmap work:** **Phase 8.2–8.4** (release / R8 / signing); **8.1** CI workflow is in **`.github/workflows/android.yml`**. Then **Phase 9** (baseline profiles). Older step tables below still teach the journey; **✅ / ⬜** in summary rows is kept in sync with what exists in git.
+**How to use:** Phases **1 → 9** are at a **completed learning baseline** for this repo (see snapshot below). **Optional follow-up:** **Phase 8.4** (compile release in CI). Older step tables below still teach the journey; **✅ / ⬜** in summary rows is kept in sync with what exists in git.
 
 ---
 
@@ -17,8 +17,8 @@ Build this app step-by-step using the reference:
 | **5** | ✅ | `core:designsystem` (theme + **Landscapist** re-exports), `core:navigation`, `core:viewmodel`, `core:preview`, **`feature:home`**, **`feature:settings`**, Navigation 3 + `PokedexNavHost`, home/details UI, **`core:datastore`** + settings/theme. |
 | **6** | ✅ | Unit tests across `core:*` and feature ViewModels; details in **`TESTING_PLAN.md`**. Full-app **`androidTest` / Compose UI smoke** intentionally **out of scope** for now. |
 | **7** | ✅ | Spotless via convention plugin; run `spotlessCheck` locally / in CI. |
-| **8** | 🟨 **In progress** | **8.1** ✅ `.github/workflows/android.yml`: `spotlessCheck`, `testDebugUnitTest`, `:app:assembleDebug` on `main` PR/push. **8.2–8.4** R8, signing, release in CI (see Phase 8). |
-| **9** | ⬜ | Baseline profiles + optional macrobenchmark (when you want startup work). |
+| **8** | 🟨 **Mostly done** | **8.1** ✅ `.github/workflows/android.yml`: `spotlessCheck`, `testDebugUnitTest`, `:app:assembleDebug` on `master` PR/push. **8.2–8.3** ✅ R8/shrink, `proguard-rules.pro`, release signing via root `local.properties` (local learning). **8.4** ⬜ deferred — no `:app:assembleRelease` in CI until Play/store pipeline. |
+| **9** | ✅ | `:baselineprofile` module, `:app` consumer (`profileinstaller` + `baselineProfile`), generated `baseline-prof.txt` / `startup-prof.txt` committed, `StartupBenchmarks` on connected device. Profile generation **not** in CI (committed artifacts). |
 
 **Naming note:** The roadmap originally said **`feature:designsystem`**; this project uses **`core:designsystem`** (shared UI tokens + Landscapist APIs) — same role for theming and previews.
 
@@ -483,30 +483,39 @@ This phase combines **automation in CI** with **release-quality builds** (shrink
 
 ### 8.1 CI (GitHub Actions)
 
-- **Done:** `.github/workflows/android.yml` — on PR/push to `main`: job **lint** (`spotlessCheck`), then **build** (`testDebugUnitTest`, `:app:assembleDebug`), Temurin 17, **`gradle/actions/setup-gradle`** for caching.
-- Optionally run **`assembleRelease`** on `main` or tags so shrinker issues surface early (see 8.2).
+- **Done:** `.github/workflows/android.yml` — on PR/push to **`master`**: job **lint** (`spotlessCheck`), then **build** (`testDebugUnitTest`, `:app:assembleDebug`), Temurin 17, **`gradle/actions/setup-gradle`** for caching.
+- Optionally run **`assembleRelease`** on `master` or tags so shrinker issues surface early (see 8.4).
 
 ### 8.2 Code shrinking & optimization (R8)
 
-- In **`app`** `release` (or a dedicated `minified` buildType): set **`isMinifyEnabled = true`** when you are ready to debug R8 (start with `false` until you have rules).
-- Optionally **`isShrinkResources = true`** after minify is stable (removes unused resources; requires careful testing).
-- Maintain **`proguard-rules.pro`** (app) and **`consumer-rules.pro`** in libraries (e.g. **`:core:datastore`** protobuf lite keeps) so **DataStore / Retrofit / Hilt** keep working under shrink.
-- Run **`./gradlew :app:assembleRelease`** locally and smoke-test: cold start, network, Room, settings/theme, navigation.
+- **Done (local):** **`app`** `release` has **`isMinifyEnabled = true`**, **`isShrinkResources = true`**, **`proguard-rules.pro`**; release APK smoke-tested on device.
+- Maintain **`consumer-rules.pro`** in libraries (e.g. **`:core:datastore`** protobuf lite keeps) when adding libraries that need R8 keeps.
+- Re-run **`./gradlew :app:assembleRelease`** after major dependency or ProGuard changes.
 
 ### 8.3 Signing & secrets
 
-- Add **release signing** (`signingConfigs`) using **local** `keystore.properties` or CI secrets — never commit keystores or passwords to git.
-- Document how you build a release AAB/APK for yourself or Play Console.
+- **Done (local learning):** Release signing via root **`local.properties`** (`RELEASE_KEYSTORE_PATH`, `RELEASE_KEY_ALIAS`, `RELEASE_KEY_PASSWORD`, `RELEASE_KEYSTORE_PASSWORD`). Gradle uses `releaseFromLocal` when keystore exists, else debug signing. Keystore not committed.
+- For Play Console: build **`bundleRelease`** / **`assembleRelease`** with valid local signing or CI secrets.
 
 ### 8.4 CI + release together
 
-- CI should at least **compile** release (or run R8 on a nightly job) so regressions in ProGuard rules are caught before you cut a store build.
+- **Deferred:** CI stays debug + tests only (no **`generateReleaseBaselineProfile`**, no **`assembleRelease`** until store/Play pipeline and CI signing are defined).
 
 ---
 
 ## Phase 9: Baseline profiles
 
-*Steps will be added here when we start this phase.*
+**Status: ✅** — Mirrors reference flow; profiles generated on a **connected device** (Option B), committed to git, not regenerated in CI.
+
+| Step | Task | Status |
+|------|------|--------|
+| 9.1 | `include(":baselineprofile")`, catalog deps/plugins, `baselineprofile/build.gradle.kts` (`targetProjectPath`, `targetAppId` instrumentation args; managed devices commented for connected-device flow). | ✅ |
+| 9.2 | `:app` — `baselineprofile` plugin, `profileinstaller`, `baselineProfile(project(":baselineprofile"))`. | ✅ |
+| 9.3 | Sources: `AndroidManifest.xml`, `PokedexScenarios.kt`, `BaselineProfileGenerator.kt`, `StartupBenchmarks.kt`. | ✅ |
+| 9.4 | `./gradlew :app:generateReleaseBaselineProfile` → commit `app/src/release/generated/baselineProfiles/baseline-prof.txt` and `startup-prof.txt`. | ✅ |
+| 9.5 | Optional validation: `./gradlew :baselineprofile:connectedBenchmarkReleaseAndroidTest` (compare `startupCompilationNone` vs `startupCompilationBaselineProfiles`). | ✅ |
+
+**Notes:** `:baselineprofile` does not apply `compose.compiler` (no Compose in that module). Regenerate profiles after meaningful startup/navigation changes.
 
 ---
 
@@ -525,4 +534,4 @@ This phase combines **automation in CI** with **release-quality builds** (shrink
 
 ---
 
-*Last updated: **Phase 8.1** CI workflow added; **8.2–8.4** release hardening next; **Phase 9** baseline profiles after that.*
+*Last updated: **Phase 8.1–8.3** done locally; **8.4** deferred; **Phase 9** baseline profiles + benchmarks done. Optional next: **8.4** `assembleRelease` in CI.*
