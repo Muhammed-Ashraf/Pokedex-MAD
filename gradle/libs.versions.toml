@@ -64,7 +64,15 @@ androidxDataStore = "1.1.7"
 protobufPlugin = "0.9.5"
 protobuf = "4.31.1"
 
-
+# Phase 9 (Baseline Profiles):
+# - baselineProfilePlugin: Gradle plugin to generate/merge baseline profiles.
+# - benchmarkMacro: macrobenchmark + baseline profile rule/test APIs.
+# - uiAutomator: drives app UI flows while collecting profiles.
+# - profileinstaller: installs packaged baseline profiles at app startup.
+baselineProfilePlugin = "1.4.0"
+benchmarkMacro = "1.4.0"
+uiAutomator = "2.3.0"
+profileinstaller = "1.4.1"
 
 
 
@@ -150,7 +158,6 @@ compose-compiler-gradlePlugin = { group = "org.jetbrains.kotlin", name = "compos
 # Phase 2.6: Used only by build-logic (compileOnly) so SpotlessConventionPlugin.kt can use SpotlessExtension.
 spotless-gradlePlugin = { group = "com.diffplug.spotless", name = "spotless-plugin-gradle", version.ref = "spotless" }
 
-
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-lifecycle-viewModelCompose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "androidxLifecycle" }
 
@@ -158,10 +165,15 @@ androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime
 androidx-compose-animation = { group = "androidx.compose.animation", name = "animation" }
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation"}
 androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout" }
+
+profileinstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "profileinstaller" }
+macrobenchmark = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "benchmarkMacro" }
+uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "uiAutomator" }
+
 [plugins]
 #default when creating project
 android-application = { id = "com.android.application", version.ref = "agp" }
-kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 
 #Added as project progressed
 android-library = { id = "com.android.library", version.ref = "agp" }
@@ -174,3 +186,6 @@ spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 compose-stability-analyzer = { id = "com.github.skydoves.compose.stability.analyzer", version.ref = "composeStabilityAnalyzer" }
 protobuf-plugin = { id = "com.google.protobuf", version.ref = "protobufPlugin" }
+# Phase 9: apply in :baselineprofile module.
+baselineprofile = { id = "androidx.baselineprofile", version.ref = "baselineProfilePlugin" }
+android-test = { id = "com.android.test", version = "8.12.0" }

@@ -20,6 +20,7 @@ plugins {
     id("ashraf.pokedex.mad.android.application.compose")
     id("ashraf.pokedex.mad.android.hilt")
     id("ashraf.pokedex.mad.spotless")
+    alias(libs.plugins.baselineprofile)
 }
 
 // Reference-style release signing: keys in root `local.properties` (gitignored).
@@ -137,6 +138,16 @@ dependencies {
     implementation(projects.feature.home)
     implementation(projects.feature.settings)
 
+    // cores
+    implementation(projects.core.model) //todo check last whether model is needed
+    implementation(projects.core.data)
+    implementation(projects.core.designsystem)
+    implementation(projects.core.navigation)
+
+    // baseline profile
+    implementation(libs.profileinstaller)
+    baselineProfile(project(":baselineprofile"))
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -144,12 +155,4 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-
-
-    // cores
-    implementation(projects.core.model) //todo check last whether model is needed
-    implementation(projects.core.data)
-    implementation(projects.core.designsystem)
-    implementation(projects.core.navigation)
-
 }
