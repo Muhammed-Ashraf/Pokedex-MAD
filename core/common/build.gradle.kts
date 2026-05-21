@@ -4,7 +4,7 @@ plugins {
     // In the reference they use an alias(libs.plugins.kotlin.jvm), but in THIS project
     // the plugin is already on the classpath, so we must use kotlin("jvm") to avoid
     // a version conflict error.
-    kotlin("jvm")
+    alias(libs.plugins.kotlin.jvm)
 
     // KSP so Hilt can generate code in this JVM-only module.
     // Same idea as the reference: core:common uses Hilt *core* (not hilt-android).
