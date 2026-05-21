@@ -20,36 +20,85 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
  * Configures the Android block (compileSdk, minSdk, Java version, lint).
  * CommonExtension is the base for both Application and Library in AGP 8.x.
  */
+//internal fun Project.configureKotlinAndroid(
+//    commonExtension: CommonExtension<*, *, *, *, *, *>,
+//) {
+//    commonExtension.apply {
+//        compileSdk = 36
+//
+//        defaultConfig {
+//            minSdk = 29
+//        }
+//
+//        compileOptions {
+//            sourceCompatibility = JavaVersion.VERSION_17
+//            targetCompatibility = JavaVersion.VERSION_17
+//        }
+//
+//        lint {
+//            abortOnError = false
+//        }
+//    }
+//}
+//
+///**
+// * Configures the Kotlin compiler (JVM target and compiler arguments).
+// */
+//internal fun Project.configureKotlinAndroid(
+//    extension: KotlinAndroidProjectExtension,
+//) {
+//    extension.apply {
+//        compilerOptions {
+//
+//            // Treat all Kotlin warnings as errors (disabled by default)
+//            allWarningsAsErrors.set(
+//                properties["warningsAsErrors"] as? Boolean ?: false
+//            )
+//
+//            freeCompilerArgs.set(
+//                freeCompilerArgs.getOrElse(emptyList()) + listOf(
+////                    // Enables advanced Kotlin language/compiler features used by this codebase.
+////                    "-Xexplicit-backing-fields",
+////                    "-Xcontext-receivers",
+//
+//                    // Global opt-ins so modules can use selected experimental APIs
+//                    // without repeating local @OptIn annotations in many files.
+//                    "-Xopt-in=kotlin.RequiresOptIn",
+//                    "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+//                    "-Xopt-in=androidx.compose.material3.ExperimentalMaterial3Api",
+//                    "-Xopt-in=androidx.lifecycle.compose.ExperimentalLifecycleComposeApi",
+//                    "-Xopt-in=androidx.compose.animation.ExperimentalSharedTransitionApi",
+//                ),
+//            )
+//
+//            jvmTarget.set(JvmTarget.JVM_17)
+//
+//        }
+//    }
+//}
+
 internal fun Project.configureKotlinAndroid(
-    commonExtension: CommonExtension<*, *, *, *, *, *>,
+    commonExtension: CommonExtension,
 ) {
     commonExtension.apply {
         compileSdk = 36
 
-        defaultConfig {
-            minSdk = 29
-        }
+        defaultConfig.minSdk = 29
 
-        compileOptions {
+        compileOptions.apply {
             sourceCompatibility = JavaVersion.VERSION_17
             targetCompatibility = JavaVersion.VERSION_17
         }
 
-        lint {
-            abortOnError = false
-        }
+        lint.abortOnError = false
     }
 }
 
-/**
- * Configures the Kotlin compiler (JVM target and compiler arguments).
- */
 internal fun Project.configureKotlinAndroid(
     extension: KotlinAndroidProjectExtension,
 ) {
     extension.apply {
         compilerOptions {
-
             // Treat all Kotlin warnings as errors (disabled by default)
             allWarningsAsErrors.set(
                 properties["warningsAsErrors"] as? Boolean ?: false
@@ -57,22 +106,21 @@ internal fun Project.configureKotlinAndroid(
 
             freeCompilerArgs.set(
                 freeCompilerArgs.getOrElse(emptyList()) + listOf(
-//                    // Enables advanced Kotlin language/compiler features used by this codebase.
-//                    "-Xexplicit-backing-fields",
-//                    "-Xcontext-receivers",
-
-                    // Global opt-ins so modules can use selected experimental APIs
-                    // without repeating local @OptIn annotations in many files.
+                    "-Xexplicit-backing-fields",
+                    "-Xcontext-receivers",
                     "-Xopt-in=kotlin.RequiresOptIn",
+                    // Enable experimental coroutines APIs, including Flow
                     "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+                    // Enable experimental compose APIs
                     "-Xopt-in=androidx.compose.material3.ExperimentalMaterial3Api",
                     "-Xopt-in=androidx.lifecycle.compose.ExperimentalLifecycleComposeApi",
                     "-Xopt-in=androidx.compose.animation.ExperimentalSharedTransitionApi",
-                ),
+                )
             )
 
+            // Set JVM target to 17
             jvmTarget.set(JvmTarget.JVM_17)
-
         }
     }
 }
+

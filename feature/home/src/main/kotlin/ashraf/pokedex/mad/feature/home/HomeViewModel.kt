@@ -1,11 +1,10 @@
 package ashraf.pokedex.mad.feature.home
 
 import androidx.compose.runtime.Stable
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ashraf.pokedex.mad.core.data.repository.home.HomeRepository
 import ashraf.pokedex.mad.core.model.Pokemon
-import ashraf.pokedex.mad.core.viewmodel.BaseViewModel
-import ashraf.pokedex.mad.core.viewmodel.ViewModelStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,7 +38,7 @@ import kotlinx.coroutines.flow.stateIn
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val homeRepository: HomeRepository,
-) : BaseViewModel() {
+) : ViewModel() {
 
     /**
      * What this does:
@@ -51,8 +50,8 @@ class HomeViewModel @Inject constructor(
      * When to use / how it behaves:
      * - Updated from repository callbacks: start, complete, and error.
      */
-    internal val uiState: ViewModelStateFlow<HomeUiState> =
-        viewModelStateFlow(HomeUiState.Loading)
+    internal val uiState: StateFlow<HomeUiState>
+        field = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
 
     /**
      * What this does:
@@ -100,10 +99,10 @@ class HomeViewModel @Inject constructor(
             .flatMapLatest { page ->
                 homeRepository.fetchPokemonList(
                     page = page,
-                    onStart = { uiState.tryEmit(key, HomeUiState.Loading) },
-                    onComplete = { uiState.tryEmit(key, HomeUiState.Idle) },
+                    onStart = { uiState.tryEmit( HomeUiState.Loading) },
+                    onComplete = { uiState.tryEmit( HomeUiState.Idle) },
                     onLastPageReached = { isLastPageReached = true },
-                    onError = { message -> uiState.tryEmit(key, HomeUiState.Error(message)) },
+                    onError = { message -> uiState.tryEmit( HomeUiState.Error(message)) },
                 )
             }
             .stateIn(

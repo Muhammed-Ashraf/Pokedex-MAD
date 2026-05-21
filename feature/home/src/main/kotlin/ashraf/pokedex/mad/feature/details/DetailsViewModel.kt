@@ -1,16 +1,16 @@
 package ashraf.pokedex.mad.feature.details
 
 import androidx.compose.runtime.Stable
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ashraf.pokedex.mad.core.data.repository.details.DetailsRepository
 import ashraf.pokedex.mad.core.model.Pokemon
 import ashraf.pokedex.mad.core.model.PokemonInfo
-import ashraf.pokedex.mad.core.viewmodel.BaseViewModel
-import ashraf.pokedex.mad.core.viewmodel.ViewModelStateFlow
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
@@ -55,7 +55,7 @@ class DetailsViewModel @AssistedInject constructor(
      * - Repository encapsulates network + DB policy for details.
      */
     private val detailsRepository: DetailsRepository,
-) : BaseViewModel() {
+) : ViewModel() {
 
     /**
      * What this does:
@@ -74,8 +74,8 @@ class DetailsViewModel @AssistedInject constructor(
         fun create(pokemon: Pokemon): DetailsViewModel
     }
 
-    internal val uiState: ViewModelStateFlow<DetailsUiState> =
-        viewModelStateFlow(DetailsUiState.Loading)
+    internal val uiState: StateFlow<DetailsUiState>
+        field = MutableStateFlow<DetailsUiState>(DetailsUiState.Loading)
 
     val pokemonInfo: StateFlow<PokemonInfo?> = flow {
         detailsRepository.fetchPokemonInfo(
