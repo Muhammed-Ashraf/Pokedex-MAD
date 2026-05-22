@@ -2,6 +2,7 @@ import ashraf.pokedex.mad.configureKotlinAndroid
 import com.android.build.api.dsl.ApplicationExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.getByType
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 
@@ -23,26 +24,17 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
  * - Sets app-specific pieces like targetSdk in one place.
  */
 class AndroidApplicationConventionPlugin : Plugin<Project> {
-
     override fun apply(target: Project) {
         with(target) {
-            // Use the Android **application** plugin for app modules.
-            pluginManager.apply("com.android.application")
-            pluginManager.apply("org.jetbrains.kotlin.android")
-
-            // Configure the Android application extension using the same
-            // helper you already use for libraries (compileSdk, minSdk, etc.).
-            val androidExtension = extensions.getByType<ApplicationExtension>()
-            configureKotlinAndroid(androidExtension)
-
-            androidExtension.defaultConfig {
-                // Library plugin sets minSdk; here we can also centralize targetSdk
-                // for all application modules.
-                targetSdk = 36
+            with(pluginManager) {
+                apply("com.android.application")
             }
 
-            // Configure Kotlin Android extension (JVM target, compiler options)
-            // exactly like in the library convention plugin.
+            extensions.configure<ApplicationExtension> {
+                configureKotlinAndroid(this)
+                defaultConfig.targetSdk = 36
+            }
+
             extensions.getByType<KotlinAndroidProjectExtension>().apply {
                 configureKotlinAndroid(this)
             }

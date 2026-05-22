@@ -20,17 +20,14 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
  * Apply it in a module's build.gradle.kts with: id("ashraf.pokedex.mad.android.library")
  */
 class AndroidLibraryConventionPlugin : Plugin<Project> {
-
     override fun apply(target: Project) {
         with(target) {
             with(pluginManager) {
                 apply("com.android.library")
-                apply("org.jetbrains.kotlin.android")
             }
 
-            extensions.configure<LibraryExtension> {
+            extensions.configure<com.android.build.api.dsl.LibraryExtension> {
                 configureKotlinAndroid(this)
-                defaultConfig.targetSdk = 36
             }
 
             extensions.getByType<KotlinAndroidProjectExtension>().apply {
