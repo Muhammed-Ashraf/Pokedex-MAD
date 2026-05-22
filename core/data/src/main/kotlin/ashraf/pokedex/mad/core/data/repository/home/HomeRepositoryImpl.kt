@@ -71,7 +71,7 @@ class HomeRepositoryImpl @Inject constructor(
         pokedexClient.fetchPokemonList(page = page)
       response
         .suspendOnSuccess {
-          // If next is null, reference treats this as the last page.
+          // If next is null, pagination has reached the last page.
           if (data.next == null) {
             onLastPageReached()
           }

@@ -35,7 +35,7 @@ import ashraf.pokedex.mad.core.database.entity.PokemonInfoEntity
  * exportSchema = true:
  * - Room will export schema JSON files into core/database/schemas/ (because we configured
  *   room.schemaLocation in build.gradle.kts).
- * - This helps with migrations later (and mirrors reference project).
+ * - Schema export helps with migrations when you bump the version.
  */
 @Database(
   entities = [PokemonEntity::class, PokemonInfoEntity::class],

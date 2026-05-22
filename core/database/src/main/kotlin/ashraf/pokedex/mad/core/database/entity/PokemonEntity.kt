@@ -42,8 +42,8 @@ data class PokemonEntity(
 
   /**
    * Primary key means "unique identifier for a row".
-   * The reference uses name as PK because PokeAPI name is stable and unique (e.g. "bulbasaur").
-   * Alternative would be an id extracted from url, but we'll mirror reference for now.
+   * Name is the primary key because PokeAPI species names are stable and unique (e.g. "bulbasaur").
+   * Alternative: numeric id parsed from the URL path.
    */
   @PrimaryKey val name: String,
 

@@ -40,7 +40,7 @@ sealed interface PokedexScreen : NavKey {
   /**
    * Detail screen carrying a selected Pokemon.
    *
-   * Reference mirrors this by passing a model object directly.
+   * Details receives the selected [Pokemon] as navigation argument data.
    * (Later you may optimize to pass only an id/name and load details from repository.)
    */
   @Serializable

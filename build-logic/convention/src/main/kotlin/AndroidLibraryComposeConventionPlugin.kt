@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginE
 /**
  * Convention plugin to enable Jetpack Compose for Android **library** modules.
  *
- * Purpose (reference-aligned):
+ * Purpose:
  * - Keeps library modules minimal (no buildFeatures.compose = true in each module).
  * - Centralizes Compose enablement + Kotlin compose plugin application.
  * - Used by UI libraries like core:designsystem (and later feature UI modules).

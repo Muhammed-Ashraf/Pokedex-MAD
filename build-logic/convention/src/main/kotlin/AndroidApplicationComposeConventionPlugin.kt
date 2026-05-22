@@ -9,7 +9,7 @@ import org.gradle.kotlin.dsl.getByType
  * Application Compose convention plugin.
  *
  * - Applies the Android application plugin (defensive).
- * - Applies the Compose stability analyzer plugin (like the reference).
+ * - Applies the Compose stability analyzer plugin.
  * - Delegates actual Compose config to configureAndroidCompose.
  */
 class AndroidApplicationComposeConventionPlugin : Plugin<Project> {

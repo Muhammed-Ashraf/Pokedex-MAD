@@ -18,7 +18,7 @@ package ashraf.pokedex.mad.core.test
 import ashraf.pokedex.mad.core.model.Pokemon
 import ashraf.pokedex.mad.core.model.PokemonInfo
 
-/** Small domain fixtures for unit tests (reference: core:test MockUtil). */
+/** Small domain fixtures shared by unit tests. */
 object MockUtil {
 
   fun mockPokemon() = Pokemon(

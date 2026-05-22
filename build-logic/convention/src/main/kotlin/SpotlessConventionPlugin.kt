@@ -11,9 +11,8 @@ import org.gradle.kotlin.dsl.configure
  * that applies `id("ashraf.pokedex.mad.spotless")` gets the same rules without copying a long
  * spotless { } block. Run `./gradlew spotlessApply` to fix formatting; use `spotlessCheck` in CI.
  *
- * **Why this exists:** Matches the reference project (pokedex-compose), which uses a single
- * spotless convention plugin. Ensures consistent style and license headers across app and
- * all core/feature modules; one place to change indent size or license text.
+ * **Why this exists:** One Spotless id per module keeps formatting rules and license headers
+ * consistent across app and all core/feature modules — change indent or license text in one place.
  *
  * **What this plugin does:**
  * 1. Applies the Spotless Gradle plugin.

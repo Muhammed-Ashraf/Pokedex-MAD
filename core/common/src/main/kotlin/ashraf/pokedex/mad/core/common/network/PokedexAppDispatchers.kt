@@ -32,7 +32,7 @@ annotation class Dispatcher(val pokedexAppDispatchers: PokedexAppDispatchers)
  *
  * Right now:
  * - IO: background work (network, database, file IO).
- * The reference only uses IO here, but this pattern allows
+ * Only IO is wired today; this enum pattern allows
  * adding other dispatcher types in the future without changing
  * the basic qualifier shape.
  */

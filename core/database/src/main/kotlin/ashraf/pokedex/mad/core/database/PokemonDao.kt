@@ -42,7 +42,7 @@ interface PokemonDao {
   /**
    * Read exactly one page of pokemon from cache.
    *
-   * This mirrors the reference method name and query shape.
+   * Paginated list query ordered by page index.
    */
   @Query("SELECT * FROM pokemon WHERE page = :page_ ORDER BY name")
   suspend fun getPokemonList(page_: Int): List<PokemonEntity>
@@ -50,7 +50,7 @@ interface PokemonDao {
   /**
    * Read all cached pages up to the given page (inclusive).
    *
-   * The reference uses this pattern so the UI can show:
+   * Exposes the highest cached page so the UI can show:
    * page 0 + page 1 + ... + page N as one growing list.
    */
   @Query("SELECT * FROM pokemon WHERE page <= :page_ ORDER BY page, name")

@@ -25,7 +25,7 @@ dependencies {
     implementation(projects.core.model)
 
     // Main dispatcher on Android; keeps behavior aligned with app modules that use Dispatchers.Main.
-    // MainCoroutinesRule uses setMain(...) from the test artifact; this dependency matches the reference setup.
+    // MainCoroutinesRule uses setMain(...) from the androidx test artifact.
     implementation(libs.kotlinx.coroutines.android)
 
     // TestCoroutineScheduler, runTest, TestDispatcher, Dispatchers.setMain / resetMain for JVM/unit tests.

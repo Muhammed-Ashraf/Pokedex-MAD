@@ -47,7 +47,7 @@ class BaselineProfileGenerator {
         ?: throw IllegalStateException("targetAppId not passed as instrumentation runner arg"),
       // Include startup classes/methods in startup profile for better cold start optimization.
       includeInStartupProfile = true,
-      // Keep reference defaults for stability and generation time trade-off.
+      // Default max iteration count balances stability and generation time.
       stableIterations = 2,
       maxIterations = 8,
     ) {

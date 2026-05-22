@@ -36,7 +36,7 @@ import ashraf.pokedex.mad.feature.settings.PokedexSettings
 import com.skydoves.compose.stability.runtime.TraceRecomposition
 
 /**
- * App-level navigation host (reference-style).
+ * App-level navigation host (Navigation 3 + shared transitions).
  *
  * Why this lives in app (not core:navigation):
  * - This file wires *feature screens* together (home/details/settings).
@@ -54,7 +54,7 @@ fun PokedexNavHost() {
 
   /**
    * Strategy to render some destinations as dialogs.
-   * (Reference uses Settings as dialog scene.)
+   * Settings is shown as a dialog destination.
    */
   val dialogStrategy = remember { DialogSceneStrategy<NavKey>() }
 

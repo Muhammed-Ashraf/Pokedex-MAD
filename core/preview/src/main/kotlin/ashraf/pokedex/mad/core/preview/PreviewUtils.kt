@@ -21,7 +21,7 @@ import ashraf.pokedex.mad.core.model.PokemonInfo
 /**
  * Static fake data for **@Preview** composables.
  *
- * Why a dedicated object (reference: PreviewUtils):
+ * Why a dedicated object:
  * - Previews run without network, Room, or Hilt; they need stable sample values.
  * - Central place avoids copying `Pokemon(...)` literals into every preview.
  * - Keeps previews aligned with real [Pokemon] construction (same defaults, same field names).

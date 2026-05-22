@@ -9,7 +9,7 @@ import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginE
 /**
  * Configure Compose-specific options for Android modules.
  *
- * Mirrors the reference project:
+ * Shared Compose setup for library/application modules:
  * - Applies the Kotlin Compose plugin.
  * - Enables buildFeatures.compose.
  * - Configures Compose compiler reports output directory.

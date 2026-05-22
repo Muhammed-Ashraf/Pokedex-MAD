@@ -24,7 +24,7 @@ plugins {
     // Needed for serializable route objects / payloads in navigation.
     alias(libs.plugins.kotlinx.serialization)
 
-    // Hilt in navigation module (reference-aligned).
+    // Hilt for navigator bindings used with Compose.
     // Useful when navigation-related classes need DI.
     id("ashraf.pokedex.mad.android.hilt")
 
@@ -49,7 +49,7 @@ dependencies {
     // Why `api` (not implementation):
     // - Modules that depend on core:navigation can use navigation types directly
     //   without re-declaring these dependencies.
-    // - This mirrors the reference project pattern.
+    // - Navigation 3 UI dependency for composable transitions.
     api(libs.androidx.navigation3.runtime)
     api(libs.androidx.navigation3.ui)
 

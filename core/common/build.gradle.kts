@@ -1,19 +1,19 @@
 plugins {
     // Kotlin JVM plugin.
     // This makes core:common a pure Kotlin/JVM module (no Android plugin, no android{} block).
-    // In the reference they use an alias(libs.plugins.kotlin.jvm), but in THIS project
+    // JVM library plugin: we use kotlin("jvm") here because the catalog + build-logic
     // the plugin is already on the classpath, so we must use kotlin("jvm") to avoid
     // a version conflict error.
     alias(libs.plugins.kotlin.jvm)
 
     // KSP so Hilt can generate code in this JVM-only module.
-    // Same idea as the reference: core:common uses Hilt *core* (not hilt-android).
+    // core:common uses Hilt *core* (not hilt-android) — no Android dependency in this module.
     alias(libs.plugins.ksp)
 }
 
 dependencies {
     // Hilt core for NON-Android modules.
-    // Reference uses this in core:common so DI helpers here don’t depend on Android.
+    // javax.inject only — DI helpers here stay JVM-pure without Android APIs.
     implementation(libs.hilt.core)
 
     // Coroutines core used by shared utilities (e.g. dispatcher abstractions).
