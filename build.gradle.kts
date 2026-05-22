@@ -11,5 +11,6 @@ plugins {
     alias(libs.plugins.baselineprofile) apply false
     alias(libs.plugins.spotless)
     alias(libs.plugins.kotlin.jvm) apply false
+    alias(libs.plugins.hotswan.compiler) apply false
 
 }

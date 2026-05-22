@@ -28,48 +28,48 @@ import ashraf.pokedex.mad.core.model.PokemonInfo
  */
 object PreviewUtils {
 
-    /** Single list row / card preview. */
-    fun mockPokemon(): Pokemon = Pokemon(
-        page = 0,
-        nameField = "bulbasaur",
-        url = "https://pokeapi.co/api/v2/pokemon/1/",
-    )
+  /** Single list row / card preview. */
+  fun mockPokemon(): Pokemon = Pokemon(
+    page = 0,
+    nameField = "bulbasaur",
+    url = "https://pokeapi.co/api/v2/pokemon/1/",
+  )
 
-    fun mockPokemonList(): List<Pokemon> {
-        val pokemons = listOf(
-            "bulbasaur" to 1,
-            "charmander" to 4,
-            "squirtle" to 7,
-            "pikachu" to 25,
-            "eevee" to 133,
-            "snorlax" to 143,
-            "mewtwo" to 150,
-            "gengar" to 94,
-        )
-        return pokemons.map { (name, id) ->
-            Pokemon(page = 0, nameField = name, url = "https://pokeapi.co/api/v2/pokemon/$id/")
-        }
+  fun mockPokemonList(): List<Pokemon> {
+    val pokemons = listOf(
+      "bulbasaur" to 1,
+      "charmander" to 4,
+      "squirtle" to 7,
+      "pikachu" to 25,
+      "eevee" to 133,
+      "snorlax" to 143,
+      "mewtwo" to 150,
+      "gengar" to 94,
+    )
+    return pokemons.map { (name, id) ->
+      Pokemon(page = 0, nameField = name, url = "https://pokeapi.co/api/v2/pokemon/$id/")
     }
+  }
 
-    fun mockPokemonInfo() = PokemonInfo(
-        id = 1,
-        name = "bulbasaur",
-        height = 7,
-        weight = 69,
-        experience = 60,
-        types = listOf(
-            PokemonInfo.TypeResponse(slot = 0, type = PokemonInfo.Type("grass")),
-            PokemonInfo.TypeResponse(slot = 0, type = PokemonInfo.Type("poison")),
-        ),
-        stats = listOf(
-            PokemonInfo.StatsResponse(baseStat = 20, effort = 0, stat = PokemonInfo.Stat("hp")),
-            PokemonInfo.StatsResponse(baseStat = 40, effort = 0, stat = PokemonInfo.Stat("attack")),
-            PokemonInfo.StatsResponse(
-                baseStat = 60,
-                effort = 0,
-                stat = PokemonInfo.Stat("defense"),
-            ),
-            PokemonInfo.StatsResponse(baseStat = 80, effort = 0, stat = PokemonInfo.Stat("attack")),
-        ),
-    )
+  fun mockPokemonInfo() = PokemonInfo(
+    id = 1,
+    name = "bulbasaur",
+    height = 7,
+    weight = 69,
+    experience = 60,
+    types = listOf(
+      PokemonInfo.TypeResponse(slot = 0, type = PokemonInfo.Type("grass")),
+      PokemonInfo.TypeResponse(slot = 0, type = PokemonInfo.Type("poison")),
+    ),
+    stats = listOf(
+      PokemonInfo.StatsResponse(baseStat = 20, effort = 0, stat = PokemonInfo.Stat("hp")),
+      PokemonInfo.StatsResponse(baseStat = 40, effort = 0, stat = PokemonInfo.Stat("attack")),
+      PokemonInfo.StatsResponse(
+        baseStat = 60,
+        effort = 0,
+        stat = PokemonInfo.Stat("defense"),
+      ),
+      PokemonInfo.StatsResponse(baseStat = 80, effort = 0, stat = PokemonInfo.Stat("attack")),
+    ),
+  )
 }

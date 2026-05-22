@@ -21,6 +21,7 @@ plugins {
     id("ashraf.pokedex.mad.android.hilt")
     id("ashraf.pokedex.mad.spotless")
     alias(libs.plugins.baselineprofile)
+    alias(libs.plugins.hotswan.compiler)
 }
 
 // Reference-style release signing: keys in root `local.properties` (gitignored).
@@ -112,6 +113,13 @@ android {
 
 }
 
+hotSwanCompiler {
+    preview {
+        sdkModeEnabled.set(true)
+        renderDelayMs.set(4000L)
+    }
+}
+
 kotlin {
     compilerOptions {
         // Reference-aligned compiler flags:
@@ -143,6 +151,9 @@ dependencies {
     implementation(projects.core.data)
     implementation(projects.core.designsystem)
     implementation(projects.core.navigation)
+
+    // compose hotswan
+    debugImplementation(libs.hotswan.preview)
 
     // baseline profile
     implementation(libs.profileinstaller)
