@@ -42,7 +42,7 @@ import java.nio.charset.StandardCharsets
 @RunWith(JUnit4::class)
 abstract class ApiAbstract<T> {
 
-  // Runs architecture-related background work synchronously in JVM unit tests (reference pattern).
+  // Runs architecture-related background work synchronously in JVM unit tests.
   @Rule
   @JvmField
   val instantExecutorRule: InstantTaskExecutorRule = InstantTaskExecutorRule()

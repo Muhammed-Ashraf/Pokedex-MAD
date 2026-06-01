@@ -1,5 +1,6 @@
 package ashraf.pokedex.mad.feature.details
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -28,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.testTag
@@ -293,6 +295,7 @@ fun DetailsStatus(pokemonInfo: PokemonInfo) {
     }
 }
 
+@SuppressLint("ViewModelConstructorInComposable")
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
@@ -312,12 +315,30 @@ private fun PokedexDetailsPreview() {
     }
 }
 
+
+@Preview
+@Composable
+private fun PokedexDetailsHeader() {
+    val pokemon = PreviewUtils.mockPokemon()
+    val pokemonInfo = PreviewUtils.mockPokemonInfo()
+    PokedexPreviewTheme { _ ->
+        DetailsHeader(
+            pokemon = pokemon,
+            pokemonInfo = pokemonInfo,
+            onPaletteLoaded = {},
+            Brush.linearGradient(colors = listOf(Color.Blue, Color.Green))
+        )
+    }
+}
+
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun PokedexDetailsInfoPreview() {
     PokedexTheme {
-        DetailsInfo(pokemonInfo = PreviewUtils.mockPokemonInfo())
+        Column {
+            DetailsInfo(pokemonInfo = PreviewUtils.mockPokemonInfo())
+        }
     }
 }
 
@@ -326,6 +347,8 @@ private fun PokedexDetailsInfoPreview() {
 @Composable
 private fun PokedexDetailsStatusPreview() {
     PokedexTheme {
-        DetailsStatus(pokemonInfo = PreviewUtils.mockPokemonInfo())
+        Column {
+            DetailsStatus(pokemonInfo = PreviewUtils.mockPokemonInfo())
+        }
     }
 }

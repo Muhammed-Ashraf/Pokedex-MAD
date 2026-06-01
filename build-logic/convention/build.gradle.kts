@@ -86,7 +86,7 @@ dependencies {
     // classpath. Our SpotlessConventionPlugin calls extensions.configure<SpotlessExtension>; the classloader
     // that loaded the plugin must be able to load SpotlessExtension. With compileOnly, Spotless is only
     // available at compile time, so at sync you get "Unable to load class SpotlessExtension".
-    // The reference project (pokedex-compose) may use compileOnly and still work: different Gradle versions
+    // Spotless is implementation (not compileOnly) so SpotlessExtension is available at configuration time.
     // handle included-build classloading differently (newer Gradle isolates more, so compileOnly is not enough).
     // Using implementation here is the reliable fix; behavior (formatting, license headers) is the same.
     implementation(libs.spotless.gradlePlugin)

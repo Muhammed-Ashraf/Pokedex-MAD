@@ -19,7 +19,7 @@ package ashraf.pokedex.mad.core.designsystem.theme
  * Immutable palette for the app, loaded from **`res/values/colors.xml`** via [colorResource].
  *
  * **Why XML instead of Kotlin `Color(0xFF…)` only?**
- * - Matches the reference: designers / theming stay in resources; light vs dark uses **different
+ * - Designers / theming stay in resources; light vs dark uses **different
  *   resource names** (e.g. `background` vs `background_dark`), not only `values-night/`.
  * - Contrasts with the default Studio template, which usually defines purple/pink **Kotlin** colors
  *   and passes them into `lightColorScheme` / `darkColorScheme` inside `MaterialTheme`.

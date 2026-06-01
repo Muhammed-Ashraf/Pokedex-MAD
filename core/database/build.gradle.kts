@@ -33,7 +33,7 @@ android {
     defaultConfig {
         // Room writes schema JSON files here (one per version). Needed for migrations.
         // JSON schemas under $projectDir/schemas and use them to define proper migrations.
-        // For now we'll use fallbackToDestructiveMigration() in DatabaseModule (like reference).
+        // fallbackToDestructiveMigration() in DatabaseModule is used during early development.
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
@@ -60,7 +60,7 @@ dependencies {
     // json parsing
     implementation(libs.kotlinx.serialization.json)
 
-    // --- Unit tests (reference core:database — Robolectric + in-memory Room)
+    // --- Unit tests (Robolectric + in-memory Room)
     testImplementation(projects.core.test)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.androidx.arch.core.testing)

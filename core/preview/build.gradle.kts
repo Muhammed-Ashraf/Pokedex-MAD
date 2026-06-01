@@ -18,11 +18,11 @@ plugins {
     id("ashraf.pokedex.mad.android.library")
 
     // Enables Jetpack Compose for this *library* module (buildFeatures + compose plugin).
-    // Reference uses a separate compose convention plugin too.
+    // Compose enabled via the library-compose convention plugin.
     id("ashraf.pokedex.mad.android.library.compose")
 
     // Hilt in one line (applies hilt + ksp + adds hilt dependencies).
-    // Reference includes this for preview module, so we mirror it for parity.
+    // Stable marker for Compose stability analysis in this module.
     id("ashraf.pokedex.mad.android.hilt")
 
     // Shared formatting + license headers.
@@ -43,7 +43,7 @@ dependencies {
     implementation(projects.core.designsystem)
 
     // Navigation contracts/types used by preview screens (if any).
-    // Purpose: preview can build composables that reference navigation types.
+    // Purpose: preview can build composables that depend on navigation types.
     implementation(projects.core.navigation)
 
     // Domain models used by preview UI state/samples.

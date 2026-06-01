@@ -18,7 +18,7 @@ package ashraf.pokedex.mad.core.designsystem.theme
 /**
  * Screen / scaffold background token (color + optional tonal elevation).
  *
- * **Why not rely only on Material `surface`?** The reference sets an explicit full-screen
+ * **Why not rely only on Material `surface`?** This app sets an explicit full-screen
  * background on a [androidx.compose.foundation.layout.Box] in [PokedexTheme], so the root
  * always matches the app palette from XML. Material’s default template instead relies on
  * [androidx.compose.material3.MaterialTheme] colorScheme for surfaces.

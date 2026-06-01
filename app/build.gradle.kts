@@ -21,9 +21,10 @@ plugins {
     id("ashraf.pokedex.mad.android.hilt")
     id("ashraf.pokedex.mad.spotless")
     alias(libs.plugins.baselineprofile)
+    alias(libs.plugins.hotswan.compiler)
 }
 
-// Reference-style release signing: keys in root `local.properties` (gitignored).
+// Release signing: keys in root `local.properties` (gitignored).
 // If anything is missing or the keystore file is absent, `release` keeps using `debug` signing.
 val localProperties = Properties()
 val localPropertiesFile = rootProject.file("local.properties")
@@ -78,7 +79,7 @@ android {
                 "proguard-rules.pro"
             )
 
-            // Reference-aligned: drop tooling / debug-only files from the merged APK (smaller, fewer duplicate-resource issues).
+            // Drop tooling / debug-only files from the merged APK (smaller, fewer duplicate-resource issues).
             packaging {
                 resources {
                     excludes += listOf(
@@ -95,7 +96,7 @@ android {
         buildConfig = true
     }
 
-    // Hilt build optimization (reference-aligned).
+    // Hilt build optimization.
 // Purpose:
 // - Enables Hilt's aggregating task mode, which can improve incremental build behavior
 //   and reduce unnecessary annotation processing work in multi-module projects.
@@ -112,9 +113,16 @@ android {
 
 }
 
+hotSwanCompiler {
+    preview {
+        sdkModeEnabled.set(true)
+        renderDelayMs.set(4000L)
+    }
+}
+
 kotlin {
     compilerOptions {
-        // Reference-aligned compiler flags:
+        // Optional Kotlin compiler flags (fewer runtime assertions in debug):
         // disable selected Kotlin runtime assertions to reduce generated checks.
         // Tradeoff: fewer runtime guardrails during debugging.
         freeCompilerArgs.addAll(
@@ -143,6 +151,9 @@ dependencies {
     implementation(projects.core.data)
     implementation(projects.core.designsystem)
     implementation(projects.core.navigation)
+
+    // compose hotswan
+    debugImplementation(libs.hotswan.preview)
 
     // baseline profile
     implementation(libs.profileinstaller)

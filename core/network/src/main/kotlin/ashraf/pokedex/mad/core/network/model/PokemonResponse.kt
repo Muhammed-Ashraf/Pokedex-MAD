@@ -22,7 +22,7 @@ import kotlinx.serialization.Serializable
 /**
  * Network response for GET /pokemon from PokeAPI.
  *
- * This mirrors the JSON shape:
+ * Matches the PokeAPI list response JSON shape:
  * {
  *   "count": 1302,
  *   "next": "https://pokeapi.co/api/v2/pokemon?offset=20&limit=20",

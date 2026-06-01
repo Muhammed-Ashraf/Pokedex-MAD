@@ -21,7 +21,7 @@ import ashraf.pokedex.mad.core.model.PokemonInfo
 /**
  * Static fake data for **@Preview** composables.
  *
- * Why a dedicated object (reference: PreviewUtils):
+ * Why a dedicated object:
  * - Previews run without network, Room, or Hilt; they need stable sample values.
  * - Central place avoids copying `Pokemon(...)` literals into every preview.
  * - Keeps previews aligned with real [Pokemon] construction (same defaults, same field names).
@@ -35,9 +35,20 @@ object PreviewUtils {
     url = "https://pokeapi.co/api/v2/pokemon/1/",
   )
 
-  /** Lazy column / grid preview (many rows, cheap to build). */
-  fun mockPokemonList(): List<Pokemon> = List(10) { index ->
-    Pokemon(page = 0, nameField = "bulbasaur$index", url = "")
+  fun mockPokemonList(): List<Pokemon> {
+    val pokemons = listOf(
+      "bulbasaur" to 1,
+      "charmander" to 4,
+      "squirtle" to 7,
+      "pikachu" to 25,
+      "eevee" to 133,
+      "snorlax" to 143,
+      "mewtwo" to 150,
+      "gengar" to 94,
+    )
+    return pokemons.map { (name, id) ->
+      Pokemon(page = 0, nameField = name, url = "https://pokeapi.co/api/v2/pokemon/$id/")
+    }
   }
 
   fun mockPokemonInfo() = PokemonInfo(

@@ -22,20 +22,20 @@
  * **[androidx.compose.material3.MaterialTheme]** with `lightColorScheme` / `darkColorScheme`
  * (Kotlin `Color` constants) and optional **dynamic color** on Android 12+.
  *
- * This module follows the **pokedex-compose reference** instead:
+ * This module uses a **custom theme** instead of only the Studio Material3 template:
  *
  * - **Studio template:** single source = **MaterialTheme** (M3: primary, surface, …); colors often
  *   as Kotlin values; `MaterialTheme.colorScheme` for widgets; dynamic color optional.
- * - **Reference-style here:** app-owned **[PokedexColors]** + **[PokedexBackground]**; colors in
+ * - **This project:** app-owned **[PokedexColors]** + **[PokedexBackground]**; colors in
  *   **`res/values/colors.xml`** via `colorResource`; access via **`PokedexTheme.colors`** /
  *   **`PokedexTheme.background`** (CompositionLocal); light/dark by **different R.color names**
  *   (e.g. `background` vs `background_dark`), not only `values-night/`.
  *
- * **When to use which:** Studio theme = fastest default. This pattern = same as reference: product
- * palette (e.g. type colors), modular `core:designsystem`, XML-friendly theming. You *can* wrap
- * **MaterialTheme** inside `PokedexTheme { }` later if you need both.
+ * **When to use which:** Studio theme = fastest default. This pattern fits a **product palette**
+ * (e.g. type colors), a dedicated `core:designsystem` module, and XML-friendly theming. You *can*
+ * wrap **MaterialTheme** inside `PokedexTheme { }` later if you need both.
  *
- * **Semantics:** `testTagsAsResourceId = true` helps UI tests / tooling (reference uses this).
+ * **Semantics:** `testTagsAsResourceId = true` helps UI tests find composables by test tag.
  */
 
 package ashraf.pokedex.mad.core.designsystem.theme

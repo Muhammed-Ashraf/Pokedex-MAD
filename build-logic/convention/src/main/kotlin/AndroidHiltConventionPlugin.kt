@@ -11,10 +11,9 @@ import org.gradle.kotlin.dsl.getByType
  * plugin applications and dependencies, we bundle them here. When a module applies
  * `id("ashraf.pokedex.mad.android.hilt")`, Gradle runs this class once for that project.
  *
- * **Why this exists:** The reference project (pokedex-compose) uses a single id like
- * `skydoves.pokedex.android.hilt` per module. We mirror that so app, core:network, and later
- * core:database and feature modules only add one line instead of Hilt plugin + KSP plugin +
- * implementation(hilt-android) + implementation(hilt-navigation-compose) + ksp(hilt-compiler).
+ * **Why this exists:** Any module that needs Hilt applies one id instead of repeating Hilt plugin +
+ * KSP plugin + `implementation(hilt-android)` + `implementation(hilt-navigation-compose)` +
+ * `ksp(hilt-compiler)` in every `build.gradle.kts`.
  * Version and library choices stay in the version catalog; this plugin just applies them.
  *
  * **What this plugin does:**

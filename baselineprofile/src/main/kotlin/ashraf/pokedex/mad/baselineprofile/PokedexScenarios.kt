@@ -28,7 +28,7 @@ import androidx.test.uiautomator.Until
  * - Baseline profile generation
  * - Startup macrobenchmark measurement
  *
- * This flow mirrors the reference project:
+ * User journey exercised here:
  * Home visible -> list interaction -> navigate to details -> details visible.
  */
 fun MacrobenchmarkScope.pokedexScenarios() {

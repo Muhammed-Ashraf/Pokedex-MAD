@@ -18,6 +18,7 @@ package ashraf.pokedex.mad.core.data.repository.home
 import ashraf.pokedex.mad.core.model.Pokemon
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.onEach
 
 class FakeHomeRepository : HomeRepository {
   override fun fetchPokemonList(
@@ -26,5 +27,28 @@ class FakeHomeRepository : HomeRepository {
     onComplete: () -> Unit,
     onLastPageReached: () -> Unit,
     onError: (String?) -> Unit,
-  ): Flow<List<Pokemon>> = flowOf()
+  ): Flow<List<Pokemon>> = flowOf(
+    listOf(
+      Pokemon(
+        page = 0,
+        nameField = "bulbasaur",
+        url = "https://pokeapi.co/api/v2/pokemon/1/",
+      ),
+      Pokemon(
+        page = 0,
+        nameField = "charmander",
+        url = "https://pokeapi.co/api/v2/pokemon/4/",
+      ),
+      Pokemon(page = 0, nameField = "squirtle", url = "https://pokeapi.co/api/v2/pokemon/7/"),
+      Pokemon(page = 0, nameField = "pikachu", url = "https://pokeapi.co/api/v2/pokemon/25/"),
+      Pokemon(page = 0, nameField = "eevee", url = "https://pokeapi.co/api/v2/pokemon/133/"),
+      Pokemon(
+        page = 0,
+        nameField = "snorlax",
+        url = "https://pokeapi.co/api/v2/pokemon/143/",
+      ),
+      Pokemon(page = 0, nameField = "mewtwo", url = "https://pokeapi.co/api/v2/pokemon/150/"),
+      Pokemon(page = 0, nameField = "gengar", url = "https://pokeapi.co/api/v2/pokemon/94/"),
+    ),
+  ).onEach { onComplete() }
 }

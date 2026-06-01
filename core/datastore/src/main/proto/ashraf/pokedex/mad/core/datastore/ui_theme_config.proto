@@ -6,13 +6,13 @@
 
 syntax = "proto3";
 
-// Where generated Java classes live (Kotlin codegen often mirrors this package).
+// Package for generated Java/Kotlin types from this proto file.
 option java_package = "ashraf.pokedex.mad.core.datastore";
 // One .java file per top-level type (cleaner generated code).
 option java_multiple_files = true;
 
 // Stored value for "which UI theme the user chose".
-// Names mirror the reference project; numeric values are stable on disk — do not renumber.
+// Enum numeric values are stable on disk — do not renumber existing values.
 enum UiThemeConfigProto {
   // proto3: first enum value must be 0. Means "unset / read as default" in app logic.
   UI_THEME_CONFIG_UNSPECIFIED = 0;

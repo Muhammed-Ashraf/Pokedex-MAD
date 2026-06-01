@@ -23,7 +23,7 @@ androidxNavigation3 = "1.0.1"
 #Hilt Navigation Compose (e.g. hiltViewModel()) — used by android.hilt convention plugin.
 androidxHiltNavigationCompose = "1.3.0"
 spotless = "6.25.0"
-# Sandwich: wraps Retrofit responses in ApiResponse (Success/Failure) for consistent error handling (reference uses it).
+# Sandwich: wraps Retrofit responses in ApiResponse for consistent error handling.
 sandwich = "2.2.1"
 composeStabilityAnalyzer = "0.7.0"
 
@@ -34,9 +34,9 @@ turbine = "1.2.1"
 mockito = "5.11.0"
 mockito-kotlin = "6.1.0"
 androidxTest = "1.6.1"
-# Room DAO unit tests on JVM (reference core:database PokemonDaoTest).
+# Room DAO unit tests on JVM (Robolectric + in-memory DB).
 robolectric = "4.13"
-# InstantTaskExecutorRule etc. for unit tests (reference core:network ApiAbstract).
+# InstantTaskExecutorRule etc. for JVM unit tests with Architecture Components.
 androidxArchCore = "2.2.0"
 
 kotlinxImmutable = "0.4.0"

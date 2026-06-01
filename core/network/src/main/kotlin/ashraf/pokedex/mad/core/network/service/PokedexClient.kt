@@ -23,7 +23,7 @@ import javax.inject.Inject
 /**
  * Thin network client that wraps [PokedexService].
  *
- * Purpose (aligned with reference project):
+ * Purpose:
  * - Centralizes how the app talks to the PokeAPI service.
  * - Encapsulates paging parameters (limit / offset) so callers only care about "page".
  * - Returns Sandwich's [ApiResponse] so higher layers (repositories) can use

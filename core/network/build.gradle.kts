@@ -56,7 +56,7 @@ dependencies {
     implementation(platform(libs.okhttp.bom))
     implementation(libs.okhttp.logging.interceptor)
 
-    // --- Sandwich: wraps Retrofit responses in ApiResponse.Success / ApiResponse.Failure for consistent handling (see reference).
+    // --- Sandwich: wraps Retrofit responses in ApiResponse for consistent error handling.
     implementation(libs.sandwich)
 
     // --- JSON serialization (Retrofit converter uses this; @Serializable uses it too).
@@ -65,7 +65,7 @@ dependencies {
     // --- Coroutines: Retrofit suspend functions and future repo/ViewModel use.
     implementation(libs.kotlinx.coroutines.android)
 
-    // --- Unit tests (reference core:network — no explicit junit here; core:test supplies JUnit on the test graph).
+    // --- Unit tests (:core:test supplies JUnit on the test classpath).
 
     // Shared test utilities: MainCoroutinesRule, MockUtil, etc. JUnit is pulled in via this module’s graph (see :core:test).
     testImplementation(projects.core.test)
@@ -73,6 +73,6 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     // In-process fake HTTP server so Retrofit hits local URLs and tests enqueue JSON from src/test/resources (MockWebServer).
     testImplementation(libs.okhttp.mockwebserver)
-    // InstantTaskExecutorRule: runs architecture-components background tasks synchronously in JVM unit tests (reference ApiAbstract).
+    // InstantTaskExecutorRule: synchronous Architecture Components tasks in JVM unit tests.
     testImplementation(libs.androidx.arch.core.testing)
 }

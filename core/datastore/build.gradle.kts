@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 // =============================================================================
-// :core:datastore — Proto DataStore + protobuf code generation (reference-style)
+// :core:datastore — Proto DataStore + protobuf code generation
 // =============================================================================
 
 plugins {
@@ -33,7 +33,7 @@ plugins {
 }
 
 android {
-    // R class + manifest merge package (use your app’s base package, not the reference’s)
+    // R class + manifest merge package (project namespace)
     namespace = "ashraf.pokedex.mad.core.datastore"
 
     defaultConfig {
